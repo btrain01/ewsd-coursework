@@ -1,0 +1,19 @@
+# Visual Studio Code
+.vscode
+.factorypath
+
+# Visual Studio 
+.vs
+bin/
+obj/
+
+# Vim
+*.swp
+*.swo
+
+# patch
+*.orig
+*.rej
+
+# Local environment
+.env

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using smartstock_inventory_service.Services;
+using smartstock_inventory_service.Models;
 
 namespace backend_app.Controllers
 {
@@ -7,16 +8,16 @@ namespace backend_app.Controllers
     [Route("[controller]")]
     public class AuthenticationController(AuthenticationService authenticationService) : ControllerBase
     {
-        [HttpGet("name")] //http method type is passed here. In hte paranthesis, pass the route i.e ("route/you/want")
-        public async Task<ActionResult> GetName()
+        [HttpPost("login")]
+        public async Task<ActionResult> Login([FromBody] LoginRequest request)
         {
-            /*
-             * use method aliases like OK to inform the http server to return an http 200
-             if you need dto validation, consider the following model state validation
-             
-             if (!ModelState.IsValid) return BadRequest(ModelState);
-             */
-            return Ok(await authenticationService.GetName());
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var token = await authenticationService.Login(request.Username, request.Password);
+
+            if (token == null) return Unauthorized("Invalid username or password");
+
+            return Ok(new { token });
         }
     }
 }

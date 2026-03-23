@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- main codes inputs -->
+<div class="container">
+    <h2>Register</h2>
+    <input type="email" id="regEmail" placeholder="Email" required>
+    <input type="text" id="regNumber" placeholder="Phone Number" required>
+    <input type="password" id="regPassword" placeholder="Password" required>
+    <button onclick="registerUser()">Sign Up</button>
+    <div class="link">
+        Already have an account? <a href="login.html">Sign In</a>
+    </div>
+</div>
+
+<!--tempro for testing -->
+<script src="script.js"></script>
+<script>
+function registerUser() {
+    const email = document.getElementById('regEmail').value;
+    const number = document.getElementById('regNumber').value;
+    const password = document.getElementById('regPassword').value;
+
+    if (!email || !number || !password) {
+        alert("Please fill all fields");
+        return;
+    }
+
+    // Save user to localStorage tempro 
+    let users = JSON.parse(localStorage.getItem('users') || '[]');
+    users.push({email, number, password});
+    localStorage.setItem('users', JSON.stringify(users));
+
+    alert("Registration Successful!");
+    window.location.href = "login.html";
+}
+</script>
+</body>
+</html>

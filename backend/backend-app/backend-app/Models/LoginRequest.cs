@@ -1,4 +1,4 @@
-﻿namespace smartstock_inventory_service.Models
+﻿namespace backend_app.Models
 {
     public class LoginRequest
     {

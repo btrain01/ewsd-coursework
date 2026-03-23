@@ -1,11 +1,9 @@
-﻿namespace smartstock_inventory_service.Services
+﻿using backend_app.Models;
+
+namespace smartstock_inventory_service.Services
 {
     public partial class AuthenticationService
     {
-        public async Task<string> GetName()
-        {
-            return await Task.Run(() => "luyando");
-        }
 
         public async Task<object> Login(string username, string password)
         {
@@ -17,6 +15,11 @@
                 }
                 return null;
             });
+        }
+
+        public async Task<string> RegisterUser(UserDTO userDTO)
+        {
+            return await Task.Run(() => "Successful");
         }
     }
 }

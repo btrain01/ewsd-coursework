@@ -29,4 +29,3 @@ namespace backend_app.Models
         public ICollection<AuditLog> AuditLogs { get; set; } = [];
     }
 }
-}

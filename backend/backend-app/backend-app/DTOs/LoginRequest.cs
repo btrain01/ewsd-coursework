@@ -1,4 +1,4 @@
-﻿namespace backend_app.Models
+﻿namespace backend_app.DTOs
 {
     public class LoginRequest
     {

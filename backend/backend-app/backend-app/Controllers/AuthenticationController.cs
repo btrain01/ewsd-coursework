@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using backend_app.DTOs;
+using Microsoft.AspNetCore.Mvc;
 using smartstock_inventory_service.Services;
-using smartstock_inventory_service.Models;
-using backend_app.Models;
 
 namespace backend_app.Controllers
 {
@@ -14,11 +13,11 @@ namespace backend_app.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var token = await authenticationService.Login(request.Username, request.Password);
+            var token = await authenticationService.Login(request);
 
             if (token == null) return Unauthorized("Invalid username or password");
 
-            return Ok(new { token });
+            return Ok(token);
         }
 
         [HttpPost("registration")]

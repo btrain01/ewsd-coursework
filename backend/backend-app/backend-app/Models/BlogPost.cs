@@ -1,0 +1,31 @@
+using backend_app.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace backend_app.Models
+{
+    [Table("blog_posts")]
+    public class BlogPost : Actionable
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        [Required]
+        public int AuthorId { get; set; }
+
+        [Required, MaxLength(255)]
+        public string Title { get; set; } = string.Empty;
+
+        [Required]
+        public string Content { get; set; } = string.Empty;
+
+        public BlogPostStatus Status { get; set; } = BlogPostStatus.Draft;
+
+        public DateTime? PublishedAt { get; set; }
+
+        [ForeignKey(nameof(AuthorId))]
+        public User Author { get; set; } = null!;
+
+        public ICollection<BlogComment> Comments { get; set; } = [];
+    }
+}

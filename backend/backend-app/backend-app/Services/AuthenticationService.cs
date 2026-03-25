@@ -12,6 +12,7 @@ namespace smartstock_inventory_service.Services
         {
             var user = await applicationDBContext.Users
                 .Include(u => u.Role.RolePermissions)
+                .ThenInclude(rp => rp.Permission)
                 .Where(x => x.Username == loginRequest.Username && x.PasswordHash == loginRequest.Password)
                 .FirstOrDefaultAsync();
 
@@ -22,8 +23,14 @@ namespace smartstock_inventory_service.Services
             await applicationDBContext.SaveChangesAsync();
             return new UserToken()
             {
+                Id = user.Id,
                 Username = user.Username,
-                Role = [.. user.Role.RolePermissions.Select(rp => rp.Permission)]
+                Role = [.. user.Role.RolePermissions
+                    .Select(rp => new
+                    {
+                        rp.Permission.Resource,
+                        rp.Permission.Description
+                    })]
             };
         }
 

@@ -332,4 +332,3 @@ CREATE INDEX idx_notifications_type_created ON notifications(type, created_at);
 CREATE INDEX idx_audit_logs_table_record ON audit_logs(table_name, record_id);
 CREATE INDEX idx_audit_logs_changed_by_created ON audit_logs(changed_by, created_at);
 CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at);
-CREATE INDEX ON audit_logs        (created_at);

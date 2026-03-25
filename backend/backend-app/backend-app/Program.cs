@@ -1,4 +1,5 @@
 using backend_app.Context;
+using backend_app.Services;
 using Microsoft.EntityFrameworkCore;
 using smartstock_inventory_service.Services;
 
@@ -18,6 +19,8 @@ builder.Services.AddOpenApi();
 
 //make cdi container aware of auth services
 builder.Services.AddScoped<AuthenticationService>();
+builder.Services.AddScoped<StudentService>(); // ?? Add this line
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

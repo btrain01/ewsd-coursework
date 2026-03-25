@@ -1,0 +1,15 @@
+1. Create Database and Tables. Run Script from etsystem.sql from the group repo
+
+2. Navigate to ewsd-coursework/backend/backend-app/backend-app/program.cs
+Inside this file change the line 
+"options.UseNpgsql(@"Host=localhost;Username=postgres;Password=1234;Database=etsystem");"
+where 
+- Host is the ip address of where the postgres server is running
+- Username is the postgres server username
+- Password is the postgres server password
+- Database is the postgres server database to connect to
+
+Once done save the file and close it.
+
+2. From the root directory (ewsd-coursework/backend/backend-app/)
+- execute "dotnet run --project ./backend-app" to start the server and watch the logs to ensure server has started.

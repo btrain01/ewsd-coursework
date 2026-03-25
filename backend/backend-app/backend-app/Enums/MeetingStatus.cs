@@ -7,5 +7,4 @@
         Completed,
         Cancelled
     }
-s
 }

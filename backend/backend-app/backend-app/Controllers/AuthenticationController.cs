@@ -19,6 +19,18 @@ namespace backend_app.Controllers
 
             return Ok(token);
         }
+        
+        [HttpPost("logout/{id}")]
+        public async Task<ActionResult> LogOut(int id)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var token = await authenticationService.LogOut(id);
+
+            if (token == null) return Unauthorized("Invalid UserId");
+
+            return Ok(token);
+        }
 
         [HttpPost("registration")]
         public async Task<ActionResult> Register([FromBody] UserDTO userDTO)

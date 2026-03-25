@@ -56,11 +56,9 @@ CREATE TABLE "users" (
   "first_name" "VARCHAR(150)" NOT NULL,
   "last_name" "VARCHAR(150)" NOT NULL,
   "role_id" int NOT NULL,
-  "is_active" BOOLEAN NOT NULL DEFAULT true,
+  "is_logged_in" BOOLEAN NOT NULL DEFAULT true,
   "created_at" "TIMESTAMPTZ" NOT NULL DEFAULT (NOW()),
-  "updated_at" "TIMESTAMPTZ" NOT NULL DEFAULT (NOW()),
-  CONSTRAINT "chk_email_format" CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
-  CONSTRAINT "chk_username_format" CHECK (username ~* '^[a-z0-9_]{3,50}$')
+  "updated_at" "TIMESTAMPTZ" NOT NULL DEFAULT (NOW())
 );
 
 CREATE TABLE "tutor_students" (
@@ -188,7 +186,7 @@ CREATE INDEX ON "users" ("username");
 
 CREATE INDEX ON "users" ("role_id");
 
-CREATE INDEX ON "users" ("is_active");
+CREATE INDEX ON "users" ("is_logged_in");
 
 CREATE INDEX ON "tutor_students" ("tutor_id");
 

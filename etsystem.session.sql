@@ -271,10 +271,10 @@ ALTER TABLE notifications     ADD FOREIGN KEY (user_id)       REFERENCES users (
 ALTER TABLE audit_logs        ADD FOREIGN KEY (changed_by)    REFERENCES users (id)          ON DELETE SET NULL DEFERRABLE INITIALLY IMMEDIATE;
 
 --UNIQUE CONSTRAINT
-ALTER TABLE tutor_students
-  ADD CONSTRAINT unique_tutor_student_allocation UNIQUE (tutor_id, student_id)
-  WHERE deleted_at IS NULL
-  
+CREATE UNIQUE INDEX IF NOT EXISTS unique_tutor_student_allocation
+ ON tutor_students (tutor_id, student_id)
+ WHERE deleted_at is NULL;
+
 --INDEXES
 -- Roles & permissions
 CREATE INDEX idx_roles_name ON roles(name);

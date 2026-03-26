@@ -32,9 +32,9 @@ namespace smartstock_inventory_service.Services
                         rp.Permission.Description
                     })]
             };
-        }
+        } 
 
-        public async Task<object> LogOut(int id)
+        public async Task<ActionResponseDTO> LogOut(int id)
         {
             var user = await applicationDBContext.Users
                 .Where(x => x.Id == id && x.IsLoggedIn)
@@ -45,7 +45,12 @@ namespace smartstock_inventory_service.Services
 
             user.IsLoggedIn = false;
             await applicationDBContext.SaveChangesAsync();
-            return new { Result = "Success"};
+            
+            return new() 
+            { 
+                Result = true,
+                Message = "Logged out successfully"
+            };
         }
 
         public async Task<User> RegisterUser(UserDTO userDTO)

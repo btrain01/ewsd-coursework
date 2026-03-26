@@ -1,20 +1,22 @@
 ﻿using backend_app.Context;
+using backend_app.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.ObjectModel;
 
 namespace backend_app.Services
 {
     public class StudentService(ApplicationDBContext applicationDBContext)
     {
-        public async Task<object> GetStudentDashboard(int studentId)
+        public async Task<StudentDTO> GetStudentDashboard(int studentId)
         {
             var student = await applicationDBContext.Users
                 .Where(x => x.Id == studentId)
-                .Select(x => new
+                .Select(x => new StudentDTO()
                 {
-                    id = x.Id,
-                    name = x.FirstName + " " + x.LastName,
-                    email = x.Email,
-                    misReference = x.Username
+                    Id = x.Id,
+                    FullName = $"{x.FirstName} {x.FirstName}",
+                    Email = x.Email,
+                    Username = x.Username
                 })
                 .FirstOrDefaultAsync();
 
@@ -24,18 +26,18 @@ namespace backend_app.Services
             return student;
         }
 
-        public async Task<object> GetStudentTutor(int studentId)
+        public async Task<StudentTutorDTO> GetStudentTutor(int studentId)
         {
-            var allocation = await applicationDBContext.TutorStudents
+            var allocation = await applicationDBContext.TutorAssignments
                 .Include(ts => ts.Tutor)
                 .Where(ts => ts.StudentId == studentId)
-                .Select(ts => new
+                .Select(ts => new StudentTutorDTO ()
                 {
-                    tutorId = ts.Tutor.Id,
-                    tutorName = ts.Tutor.FirstName + " " + ts.Tutor.LastName,
-                    tutorEmail = ts.Tutor.Email,
-                    notes = ts.Notes,
-                    allocatedAt = ts.CreatedAt
+                    TutorId = ts.Tutor.Id,
+                    TutorName = $"{ts.Tutor.FirstName} {ts.Tutor.FirstName}",
+                    TutorEmail = ts.Tutor.Email,
+                    TutorNotes = ts.Notes,
+                    AllocatedAt = ts.CreatedAt
                 })
                 .FirstOrDefaultAsync();
 
@@ -45,69 +47,62 @@ namespace backend_app.Services
             return allocation;
         }
 
-        public async Task<object> GetStudentMeetings(int studentId)
+        public async Task<ObservableCollection<MeetingDTO>> GetStudentMeetings(int studentId)
         {
-            var allocation = await applicationDBContext.TutorStudents
-                .Where(ts => ts.StudentId == studentId)
-                .FirstOrDefaultAsync();
-
-            if (allocation == null)
-                return null;
-
             var meetings = await applicationDBContext.Meetings
-                .Where(m => m.ScheduledBy == allocation.TutorId)
-                .Select(m => new
+                .Where(m => m.Participants.FirstOrDefault(p => p.UserId == studentId) != null)
+                .Select(m => new MeetingDTO()
                 {
-                    id = m.Id,
-                    scheduledAt = m.ScheduledAt,
-                    durationMinutes = m.DurationMinutes,
-                    meetingType = m.MeetingType,
-                    meetingLink = m.MeetingLink,
-                    agenda = m.Agenda,
-                    status = m.Status
+                    Id = m.Id,
+                    ScheduledAt = m.ScheduledAt,
+                    DurationInMinutes = m.DurationMins,
+                    MeetingType = m.MeetingType,
+                    MeetingLink = m.LocationOrUrl,
+                    Agenda = m.Title,
+                    MeetingStatus = m.MeetingStatus
                 })
                 .ToListAsync();
 
-            return meetings;
+            return [.. meetings];
         }
 
-        public async Task<object> GetStudentDocuments(int studentId)
+        public async Task<ObservableCollection<DocumentDTO>> GetStudentDocuments(int studentId)
         {
             var documents = await applicationDBContext.Documents
-                .Include(d => d.TutorStudent)
-                .Where(d => d.TutorStudent.StudentId == studentId)
-                .Select(d => new
+                .Include(d => d.Author)
+                .Where(d => d.Author.Id == studentId)
+                .Select(d => new DocumentDTO()
                 {
-                    id = d.Id,
-                    filename = d.Filename,
-                    description = d.Description,
-                    mimeType = d.MimeType,
-                    fileSizeBytes = d.FileSizeBytes,
-                    uploadedAt = d.CreatedAt
+                    Id = d.Id,
+                    FileName = d.FileName,
+                    Description = d.Description,
+                    MimeType = d.MimePath,
+                    FileSizeBytes = d.FileSize,
+                    UploadedAt = d.CreatedAt
                 })
                 .ToListAsync();
 
-            return documents;
+            return [.. documents];
         }
 
-        public async Task<object> GetStudentMessages(int studentId)
+        public async Task<ObservableCollection<MessageDTO>> GetStudentMessages(int studentId)
         {
             var messages = await applicationDBContext.Messages
-                .Where(m => m.RecipientId == studentId || m.SenderId == studentId)
-                .Select(m => new
+                .Where(m => m.ReceiverId == studentId || m.SenderId == studentId)
+                .Select(m => new MessageDTO()
                 {
-                    id = m.Id,
-                    senderId = m.SenderId,
-                    recipientId = m.RecipientId,
-                    subject = m.Subject,
-                    body = m.Body,
-                    isRead = m.IsRead,
-                    createdAt = m.CreatedAt
+                    Id = m.Id,
+                    SenderId = m.SenderId,
+                    RecipientId = m.ReceiverId,
+                    Subject = m.Subject,
+                    Body = m.Content,
+                    IsRead = m.IsRead,
+                    CreatedAt = m.CreatedAt
                 })
-                .OrderByDescending(m => m.createdAt)
+                .OrderByDescending(m => m.CreatedAt)
                 .ToListAsync();
  
-            return messages;
+            return [.. messages];
         }
     }
 }

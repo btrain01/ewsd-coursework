@@ -18,12 +18,14 @@ namespace backend_app.Models
 
         public string? Description { get; set; }
 
-        public MeetingStatus Status { get; set; } = MeetingStatus.Scheduled;
+        public MeetingStatus MeetingStatus { get; set; }
+        
+        public MeetingType MeetingType { get; set; }
 
         [Required]
         public DateTime ScheduledAt { get; set; }
 
-        public int? DurationMins { get; set; }
+        public int DurationMins { get; set; }
 
         [MaxLength(500)]
         public string? LocationOrUrl { get; set; }
@@ -34,7 +36,7 @@ namespace backend_app.Models
         [ForeignKey(nameof(OrganiserId))]
         public User Organiser { get; set; } = null!;
 
-        public ICollection<MeetingParticipant> Participants { get; set; } = new List<MeetingParticipant>();
-        public ICollection<Document> Documents { get; set; } = new List<Document>();
+        public ICollection<MeetingParticipant> Participants { get; set; } = [];
+        public ICollection<Document> Documents { get; set; } = [];
     }
 }

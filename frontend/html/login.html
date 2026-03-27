@@ -1,39 +1,170 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>eTutor — Login</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .error-banner {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      font-size: 13px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      display: none;
+      text-align: left;
+    }
+    .container label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      margin-top: 10px;
+      color: rgba(255,255,255,.9);
+    }
+    .container input { margin: 0 0 4px 0; }
+    .spinner {
+      display: none;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-left: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .brand { text-align: center; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .brand span { color: #cce0ff; }
+    .tagline { text-align: center; font-size: 12px; color: rgba(255,255,255,.7); margin-bottom: 20px; }
+  </style>
 </head>
 <body>
-
-<!-- main inputs-->
 <div class="container">
-    <h2>Login</h2>
-    <input type="email" id="loginEmail" placeholder="Email" required>
-    <input type="password" id="loginPassword" placeholder="Password" required>
-    <button onclick="loginUser()">Sign In</button>
-    <div class="link">
-        Don't have an account? <a href="register.html">Register</a>
-    </div>
+  <div class="brand">eTutor<span>Link</span></div>
+  <div class="tagline">University eTutoring Platform</div>
+
+  <h2>Sign In</h2>
+
+  <div class="error-banner" id="errorBanner"></div>
+
+  <label for="username">Username</label>
+  <input type="text" id="username" placeholder="Enter your username" autocomplete="username" />
+
+  <label for="password">Password</label>
+  <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" />
+
+  <button id="loginBtn" onclick="loginUser()" style="margin-top:16px">
+    Sign In <div class="spinner" id="spinner"></div>
+  </button>
+
+  <div class="link">
+    Don't have an account? <a href="register.html">Register</a>
+  </div>
 </div>
 
-<!-- javascript just tempro-->
-<script src="script.js"></script>
 <script>
-function loginUser() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
+  const API_BASE = 'http://localhost:5188';
 
-    let users = JSON.parse(localStorage.getItem('users') || '[]');
-    const user = users.find(u => u.email === email && u.password === password);
+  // Role ID to dashboard mapping
+  // Confirmed from database: 1=student, 2=tutor, 3=staff, 4=admin
+  const ROLE_REDIRECTS = {
+    1: 'student-dashboard.html',
+    2: 'tutor-dashboard.html',
+    3: 'staff-dashboard.html',
+    4: 'staff-dashboard.html',
+  };
 
-    if (user) {
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        window.location.href = "student-dashboard.html";
-    } else {
-        alert("Invalid credentials");
+  async function loginUser() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!username || !password) {
+      showError('Please enter both your username and password.');
+      return;
     }
-}
+
+    setLoading(true);
+    hideError();
+
+    try {
+      const response = await fetch(`${API_BASE}/Authentication/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      if (response.ok) {
+        const userToken = await response.json();
+
+        // Save session to localStorage
+        localStorage.setItem('currentUser', JSON.stringify(userToken));
+
+        // Resolve roleId using workaround
+        const roleId = resolveRoleId(userToken);
+
+        if (roleId && ROLE_REDIRECTS[roleId]) {
+          window.location.href = ROLE_REDIRECTS[roleId];
+        } else {
+          showError('Login successful but your role could not be determined. Please contact support.');
+          console.warn('Could not determine roleId. Token:', userToken);
+        }
+
+      } else if (response.status === 401) {
+        showError('Invalid username or password. Please try again.');
+      } else {
+        showError('Something went wrong. Please try again later.');
+      }
+
+    } catch (err) {
+      showError('Unable to reach the server. Please check your connection.');
+      console.error('Login error:', err);
+    }
+
+    setLoading(false);
+  }
+
+  // Workaround: resolve roleId from multiple possible sources
+  // Priority 1: roleName in token (once backend adds it)
+  // Priority 2: roleId stored in localStorage during registration
+  function resolveRoleId(userToken) {
+    // Priority 1 — roleName from backend (ready for when partner adds it)
+    const roleName = userToken.roleName || userToken.RoleName || '';
+    if (roleName) {
+      const nameMap = { student: 1, tutor: 2, staff: 3, admin: 4 };
+      const fromName = nameMap[roleName.toLowerCase()];
+      if (fromName) return fromName;
+    }
+
+    // Priority 2 — roleId saved during registration
+    const storedRoleId = localStorage.getItem('registeredRoleId');
+    if (storedRoleId) return parseInt(storedRoleId);
+
+    return null;
+  }
+
+  function setLoading(isLoading) {
+    const btn     = document.getElementById('loginBtn');
+    const spinner = document.getElementById('spinner');
+    btn.disabled          = isLoading;
+    btn.firstChild.textContent = isLoading ? 'Signing in... ' : 'Sign In ';
+    spinner.style.display = isLoading ? 'inline-block' : 'none';
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorBanner');
+    el.textContent   = msg;
+    el.style.display = 'block';
+  }
+
+  function hideError() {
+    document.getElementById('errorBanner').style.display = 'none';
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') loginUser(); });
 </script>
 </body>
 </html>

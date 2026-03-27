@@ -1,44 +1,237 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Register</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>eTutor — Register</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .error-banner {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      font-size: 13px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      display: none;
+      text-align: left;
+    }
+    .success-banner {
+      background: #dcfce7;
+      border: 1px solid #bbf7d0;
+      color: #16a34a;
+      font-size: 13px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      display: none;
+      text-align: left;
+    }
+    .container label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      margin-top: 10px;
+      color: rgba(255,255,255,.9);
+    }
+    .container input,
+    .container select {
+      margin: 0 0 4px 0;
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .container select {
+      color: #333;
+      cursor: pointer;
+    }
+    .field-error {
+      font-size: 12px;
+      color: #fca5a5;
+      display: none;
+      margin-bottom: 4px;
+    }
+    .spinner {
+      display: none;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-left: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .brand { text-align: center; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .brand span { color: #cce0ff; }
+    .tagline { text-align: center; font-size: 12px; color: rgba(255,255,255,.7); margin-bottom: 20px; }
+    .name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  </style>
 </head>
 <body>
-
-<!-- main codes inputs -->
 <div class="container">
-    <h2>Register</h2>
-    <input type="email" id="regEmail" placeholder="Email" required>
-    <input type="text" id="regNumber" placeholder="Phone Number" required>
-    <input type="password" id="regPassword" placeholder="Password" required>
-    <button onclick="registerUser()">Sign Up</button>
-    <div class="link">
-        Already have an account? <a href="login.html">Sign In</a>
+  <div class="brand">eTutor<span>Link</span></div>
+  <div class="tagline">University eTutoring Platform</div>
+
+  <h2>Create Account</h2>
+
+  <div class="error-banner"   id="errorBanner"></div>
+  <div class="success-banner" id="successBanner"></div>
+
+  <div class="name-row">
+    <div>
+      <label for="firstName">First Name</label>
+      <input type="text" id="firstName" placeholder="e.g. James" />
+      <div class="field-error" id="firstNameError">Required</div>
     </div>
+    <div>
+      <label for="lastName">Last Name</label>
+      <input type="text" id="lastName" placeholder="e.g. Mwale" />
+      <div class="field-error" id="lastNameError">Required</div>
+    </div>
+  </div>
+
+  <label for="username">Username</label>
+  <input type="text" id="username" placeholder="Choose a username" autocomplete="username" />
+  <div class="field-error" id="usernameError">Required</div>
+
+  <label for="email">Email Address</label>
+  <input type="email" id="email" placeholder="your@university.ac.uk" autocomplete="email" />
+  <div class="field-error" id="emailError">Enter a valid email address</div>
+
+  <label for="password">Password</label>
+  <input type="password" id="password" placeholder="Choose a password" autocomplete="new-password" />
+  <div class="field-error" id="passwordError">Must be at least 6 characters</div>
+
+  <label for="role">Role</label>
+  <select id="role">
+    <option value="" disabled selected>Select your role...</option>
+    <!-- Role IDs confirmed from database -->
+    <option value="1">Student</option>
+    <option value="2">Personal Tutor</option>
+    <option value="3">Authorised Staff</option>
+    <option value="4">Admin</option>
+  </select>
+  <div class="field-error" id="roleError">Please select a role</div>
+
+  <button id="registerBtn" onclick="registerUser()" style="margin-top:16px">
+    Create Account <div class="spinner" id="spinner"></div>
+  </button>
+
+  <div class="link">
+    Already have an account? <a href="login.html">Sign In</a>
+  </div>
 </div>
 
-<!--tempro for testing -->
-<script src="script.js"></script>
 <script>
-function registerUser() {
-    const email = document.getElementById('regEmail').value;
-    const number = document.getElementById('regNumber').value;
-    const password = document.getElementById('regPassword').value;
+  const API_BASE = 'http://localhost:5188';
 
-    if (!email || !number || !password) {
-        alert("Please fill all fields");
-        return;
+  async function registerUser() {
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName  = document.getElementById('lastName').value.trim();
+    const username  = document.getElementById('username').value.trim();
+    const email     = document.getElementById('email').value.trim();
+    const password  = document.getElementById('password').value;
+    const roleId    = document.getElementById('role').value;
+
+    // Validate all fields
+    let valid = true;
+    valid = validate('firstName', firstName, v => v.length > 0) && valid;
+    valid = validate('lastName',  lastName,  v => v.length > 0) && valid;
+    valid = validate('username',  username,  v => v.length > 0) && valid;
+    valid = validate('email',     email,     v => /\S+@\S+\.\S+/.test(v)) && valid;
+    valid = validate('password',  password,  v => v.length >= 6) && valid;
+    valid = validate('role',      roleId,    v => v !== '') && valid;
+    if (!valid) return;
+
+    setLoading(true);
+    hideBanners();
+
+    try {
+      const response = await fetch(`${API_BASE}/Authentication/registration`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username,
+          firstName,
+          lastName,
+          password,
+          email,
+          roleId: parseInt(roleId)
+        })
+      });
+
+      if (response.ok) {
+        // Save the roleId so login can use it for redirect (workaround)
+        localStorage.setItem('registeredRoleId', roleId);
+        localStorage.setItem('registeredUsername', username);
+
+        showSuccess('Account created successfully! Redirecting to login...');
+        setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+
+      } else {
+        const text = await response.text();
+        showError(text || 'Registration failed. Please try again.');
+      }
+
+    } catch (err) {
+      showError('Unable to reach the server. Please check your connection.');
+      console.error('Registration error:', err);
     }
 
-    // Save user to localStorage tempro 
-    let users = JSON.parse(localStorage.getItem('users') || '[]');
-    users.push({email, number, password});
-    localStorage.setItem('users', JSON.stringify(users));
+    setLoading(false);
+  }
 
-    alert("Registration Successful!");
-    window.location.href = "login.html";
-}
+  // Field validation helper
+  function validate(fieldId, value, rule) {
+    const input   = document.getElementById(fieldId);
+    const errorEl = document.getElementById(fieldId + 'Error');
+    const passes  = rule(value);
+    if (input)   input.style.outline   = passes ? '' : '2px solid #fca5a5';
+    if (errorEl) errorEl.style.display = passes ? 'none' : 'block';
+    return passes;
+  }
+
+  // Clear validation on input
+  ['firstName','lastName','username','email','password','role'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      el.style.outline = '';
+      const err = document.getElementById(id + 'Error');
+      if (err) err.style.display = 'none';
+    });
+  });
+
+  function setLoading(isLoading) {
+    const btn     = document.getElementById('registerBtn');
+    const spinner = document.getElementById('spinner');
+    btn.disabled          = isLoading;
+    btn.firstChild.textContent = isLoading ? 'Creating account... ' : 'Create Account ';
+    spinner.style.display = isLoading ? 'inline-block' : 'none';
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorBanner');
+    el.textContent   = msg;
+    el.style.display = 'block';
+  }
+
+  function showSuccess(msg) {
+    const el = document.getElementById('successBanner');
+    el.textContent   = msg;
+    el.style.display = 'block';
+  }
+
+  function hideBanners() {
+    document.getElementById('errorBanner').style.display   = 'none';
+    document.getElementById('successBanner').style.display = 'none';
+  }
 </script>
 </body>
 </html>

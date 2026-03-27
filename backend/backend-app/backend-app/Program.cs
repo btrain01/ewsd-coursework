@@ -19,7 +19,11 @@ builder.Services.AddOpenApi();
 
 //make cdi container aware of auth services
 builder.Services.AddScoped<AuthenticationService>();
-builder.Services.AddScoped<StudentService>(); // ?? Add this line
+builder.Services.AddScoped<UserService>();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy => policy.AllowAnyOrigin()) ;
+});
 
 
 builder.Services.AddEndpointsApiExplorer();
@@ -39,6 +43,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors();
 
 app.UseAuthorization();
 

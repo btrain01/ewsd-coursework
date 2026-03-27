@@ -53,7 +53,7 @@ namespace smartstock_inventory_service.Services
             };
         }
 
-        public async Task<User> RegisterUser(UserDTO userDTO)
+        public async Task<User> RegisterUser(RegistrationDTO userDTO)
         {
             var user = new User()
             {

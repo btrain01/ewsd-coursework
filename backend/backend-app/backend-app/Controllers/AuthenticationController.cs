@@ -33,7 +33,7 @@ namespace backend_app.Controllers
         }
 
         [HttpPost("registration")]
-        public async Task<ActionResult> Register([FromBody] UserDTO userDTO)
+        public async Task<ActionResult> Register([FromBody] RegistrationDTO userDTO)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 

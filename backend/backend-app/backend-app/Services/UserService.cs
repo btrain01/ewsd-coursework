@@ -4,17 +4,17 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 
 namespace backend_app.Services
-{
-    public class StudentService(ApplicationDBContext applicationDBContext)
+{ 
+    public class UserService(ApplicationDBContext applicationDBContext)
     {
-        public async Task<StudentDTO> GetStudentDashboard(int studentId)
+        public async Task<UserDTO> GetUserDashboard(int id)
         {
             var student = await applicationDBContext.Users
-                .Where(x => x.Id == studentId)
-                .Select(x => new StudentDTO()
+                .Where(x => x.Id == id)
+                .Select(x => new UserDTO()
                 {
                     Id = x.Id,
-                    FullName = $"{x.FirstName} {x.FirstName}",
+                    FullName = $"{x.FirstName} {x.LastName}",
                     Email = x.Email,
                     Username = x.Username
                 })
@@ -26,17 +26,17 @@ namespace backend_app.Services
             return student;
         }
 
-        public async Task<StudentTutorDTO> GetStudentTutor(int studentId)
+        public async Task<StudentTutorDTO> GetStudentTutor(int userId)
         {
             var allocation = await applicationDBContext.TutorAssignments
                 .Include(ts => ts.Tutor)
-                .Where(ts => ts.StudentId == studentId)
+                .Where(ts => ts.StudentId == userId)
                 .Select(ts => new StudentTutorDTO ()
                 {
-                    TutorId = ts.Tutor.Id,
-                    TutorName = $"{ts.Tutor.FirstName} {ts.Tutor.FirstName}",
-                    TutorEmail = ts.Tutor.Email,
-                    TutorNotes = ts.Notes,
+                    Id = ts.Tutor.Id,
+                    Name = $"{ts.Tutor.FirstName} {ts.Tutor.LastName}",
+                    Email = ts.Tutor.Email,
+                    Notes = ts.Notes,
                     AllocatedAt = ts.CreatedAt
                 })
                 .FirstOrDefaultAsync();
@@ -47,10 +47,31 @@ namespace backend_app.Services
             return allocation;
         }
 
-        public async Task<ObservableCollection<MeetingDTO>> GetStudentMeetings(int studentId)
+        public async Task<StudentTutorDTO> GetTutorAssignments(int userId)
+        {
+            var allocation = await applicationDBContext.TutorAssignments
+                .Include(ts => ts.Student)
+                .Where(ts => ts.TutorId == userId)
+                .Select(ts => new StudentTutorDTO ()
+                {
+                    Id = ts.Student.Id,
+                    Name = $"{ts.Student.FirstName} {ts.Student.LastName}",
+                    Email = ts.Student.Email,
+                    Notes = ts.Notes,
+                    AllocatedAt = ts.CreatedAt
+                })
+                .FirstOrDefaultAsync();
+
+            if (allocation == null)
+                return null;
+
+            return allocation;
+        }
+
+        public async Task<ObservableCollection<MeetingDTO>> GetUserMeetings(int userId)
         {
             var meetings = await applicationDBContext.Meetings
-                .Where(m => m.Participants.FirstOrDefault(p => p.UserId == studentId) != null)
+                .Where(m => m.Participants.FirstOrDefault(p => p.UserId == userId) != null)
                 .Select(m => new MeetingDTO()
                 {
                     Id = m.Id,
@@ -66,11 +87,11 @@ namespace backend_app.Services
             return [.. meetings];
         }
 
-        public async Task<ObservableCollection<DocumentDTO>> GetStudentDocuments(int studentId)
+        public async Task<ObservableCollection<DocumentDTO>> GetUserDocuments(int userId)
         {
             var documents = await applicationDBContext.Documents
                 .Include(d => d.Author)
-                .Where(d => d.Author.Id == studentId)
+                .Where(d => d.Author.Id == userId)
                 .Select(d => new DocumentDTO()
                 {
                     Id = d.Id,
@@ -85,10 +106,10 @@ namespace backend_app.Services
             return [.. documents];
         }
 
-        public async Task<ObservableCollection<MessageDTO>> GetStudentMessages(int studentId)
+        public async Task<ObservableCollection<MessageDTO>> GetUserMessages(int userId)
         {
             var messages = await applicationDBContext.Messages
-                .Where(m => m.ReceiverId == studentId || m.SenderId == studentId)
+                .Where(m => m.ReceiverId == userId || m.SenderId == userId)
                 .Select(m => new MessageDTO()
                 {
                     Id = m.Id,

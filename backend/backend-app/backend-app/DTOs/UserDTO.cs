@@ -1,16 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace backend_app.DTOs
+﻿namespace backend_app.DTOs
 {
     public class UserDTO
     {
-        public string Username { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Password { get; set; }
-        public string Email { get; set; }
-
-        [Required]
-        public int RoleId { get; set; }
+        public int Id { get; set; } 
+        public string FullName { get; set; } 
+        public string Email { get; set; } 
+        public string Username { get; set; } 
     }
 }

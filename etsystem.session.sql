@@ -54,7 +54,7 @@ CREATE TABLE users (
   password_hash VARCHAR(255) NOT NULL,
   first_name    VARCHAR(150) NOT NULL,
   last_name     VARCHAR(150) NOT NULL,
-  role_id       INT
+  role_id       INT,
   is_logged_in  BOOLEAN      NOT NULL DEFAULT true,
   last_login_at TIMESTAMPTZ,
   deleted_at    TIMESTAMPTZ,

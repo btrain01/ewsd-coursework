@@ -1,7 +1,7 @@
+using backend_app.Attributes;
 using backend_app.Context;
 using backend_app.Services;
 using Microsoft.EntityFrameworkCore;
-using smartstock_inventory_service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +20,7 @@ builder.Services.AddOpenApi();
 //make cdi container aware of auth services
 builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<AuthenticationAttribute>();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy => policy.AllowAnyOrigin()) ;
@@ -27,6 +28,7 @@ builder.Services.AddCors(options =>
 
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {

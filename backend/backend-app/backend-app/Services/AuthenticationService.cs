@@ -3,7 +3,7 @@ using backend_app.DTOs;
 using backend_app.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace smartstock_inventory_service.Services
+namespace backend_app.Services
 {
     public partial class AuthenticationService (ApplicationDBContext applicationDBContext)
     {
@@ -52,6 +52,21 @@ namespace smartstock_inventory_service.Services
                 Message = "Logged out successfully"
             };
         }
+
+
+        public async Task<bool> IsLoggedIn(int id)
+        {
+            var user = await applicationDBContext.Users
+                .Where(x => x.Id == id && x.IsLoggedIn)
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+                return false;
+
+            return true;
+        }
+
+
 
         public async Task<User> RegisterUser(RegistrationDTO userDTO)
         {

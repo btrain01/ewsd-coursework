@@ -1,6 +1,6 @@
 ﻿using backend_app.DTOs;
+using backend_app.Services;
 using Microsoft.AspNetCore.Mvc;
-using smartstock_inventory_service.Services;
 
 namespace backend_app.Controllers
 {

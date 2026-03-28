@@ -1,4 +1,5 @@
-﻿using backend_app.Services;
+﻿using backend_app.Attributes;
+using backend_app.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend_app.Controllers
@@ -7,6 +8,7 @@ namespace backend_app.Controllers
     [Route("[controller]")]
     public class UserController(UserService userService) : ControllerBase
     {
+        [ServiceFilter(typeof(AuthenticationAttribute))]
         [HttpGet("dashboard/{userId}")]
         public async Task<ActionResult> GetDashboard(int userId)
         {

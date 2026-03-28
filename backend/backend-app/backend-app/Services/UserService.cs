@@ -116,7 +116,7 @@ namespace backend_app.Services
                     SenderId = m.SenderId,
                     RecipientId = m.RecipientId,
                     Subject = m.Subject,
-                    Body = m.Content,
+                    Body = m.Body,
                     IsRead = m.IsRead,
                     CreatedAt = m.CreatedAt
                 })

@@ -20,13 +20,9 @@ namespace backend_app.Models
         public string? Subject { get; set; }
 
         [Required]
-        public string Content { get; set; } = string.Empty;
+        public string Body { get; set; } = string.Empty;
 
         public bool IsRead { get; set; } = false;
-
-        public DateTime SentAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime? ReadAt { get; set; }
 
         [ForeignKey(nameof(SenderId))]
         public User Sender { get; set; } = null!;

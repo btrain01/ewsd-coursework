@@ -10,18 +10,12 @@ namespace backend_app.Models
         public int Id { get; set; }
 
         [Required]
-        public int StudentId { get; set; }
-
-        [Required]
         public int TutorId { get; set; }
 
-        public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
+        [Required]
+        public int StudentId { get; set; }
 
-        public DateTime? RevokedAt { get; set; }
-
-        public int? RevokedBy { get; set; }
-
-        public bool IsActive { get; set; } = true;
+        public int? AllocatedBy { get; set; }
 
         public string? Notes { get; set; }
 
@@ -31,7 +25,7 @@ namespace backend_app.Models
         [ForeignKey(nameof(TutorId))]
         public User Tutor { get; set; } = null!;
 
-        [ForeignKey(nameof(RevokedBy))]
-        public User? RevokedByUser { get; set; }
+        [ForeignKey(nameof(AllocatedBy))]
+        public User? AllocatedByUser { get; set; }
     }
 }

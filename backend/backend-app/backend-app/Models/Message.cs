@@ -14,7 +14,7 @@ namespace backend_app.Models
         public int SenderId { get; set; }
 
         [Required]
-        public int ReceiverId { get; set; }
+        public int RecipientId { get; set; }
 
         [MaxLength(255)]
         public string? Subject { get; set; }
@@ -31,7 +31,7 @@ namespace backend_app.Models
         [ForeignKey(nameof(SenderId))]
         public User Sender { get; set; } = null!;
 
-        [ForeignKey(nameof(ReceiverId))]
+        [ForeignKey(nameof(RecipientId))]
         public User Receiver { get; set; } = null!;
     }
 }

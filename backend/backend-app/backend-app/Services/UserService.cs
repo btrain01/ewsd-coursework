@@ -26,7 +26,7 @@ namespace backend_app.Services
             return student;
         }
 
-        public async Task<StudentTutorDTO> GetStudentTutor(int userId)
+        public async Task<StudentTutorDTO> GetTutorByStudentId(int userId)
         {
             var allocation = await applicationDBContext.TutorAssignments
                 .Include(ts => ts.Tutor)
@@ -47,7 +47,7 @@ namespace backend_app.Services
             return allocation;
         }
 
-        public async Task<StudentTutorDTO> GetTutorAssignments(int userId)
+        public async Task<StudentTutorDTO> GetStudentsByTutorId(int userId)
         {
             var allocation = await applicationDBContext.TutorAssignments
                 .Include(ts => ts.Student)
@@ -76,7 +76,7 @@ namespace backend_app.Services
                 {
                     Id = m.Id,
                     ScheduledAt = m.ScheduledAt,
-                    DurationInMinutes = m.DurationMins,
+                    DurationInMinutes = m.DurationMinutes,
                     MeetingType = m.MeetingType,
                     MeetingLink = m.LocationOrUrl,
                     Agenda = m.Title,

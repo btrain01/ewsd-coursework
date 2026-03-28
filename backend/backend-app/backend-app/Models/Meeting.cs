@@ -25,7 +25,7 @@ namespace backend_app.Models
         [Required]
         public DateTime ScheduledAt { get; set; }
 
-        public int DurationMins { get; set; }
+        public int DurationMinutes { get; set; }
 
         [MaxLength(500)]
         public string? LocationOrUrl { get; set; }

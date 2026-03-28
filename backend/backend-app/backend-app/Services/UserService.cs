@@ -109,12 +109,12 @@ namespace backend_app.Services
         public async Task<ObservableCollection<MessageDTO>> GetUserMessages(int userId)
         {
             var messages = await applicationDBContext.Messages
-                .Where(m => m.ReceiverId == userId || m.SenderId == userId)
+                .Where(m => m.RecipientId == userId || m.SenderId == userId)
                 .Select(m => new MessageDTO()
                 {
                     Id = m.Id,
                     SenderId = m.SenderId,
-                    RecipientId = m.ReceiverId,
+                    RecipientId = m.RecipientId,
                     Subject = m.Subject,
                     Body = m.Content,
                     IsRead = m.IsRead,

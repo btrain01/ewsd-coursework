@@ -118,8 +118,6 @@ CREATE TABLE meetings (
   cancellation_reason TEXT,
   created_at          TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
   updated_at          TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
-  CONSTRAINT chk_meeting_duration CHECK (duration_minutes BETWEEN 15 AND 480)
-  --CONSTRAINT chk_meeting_future   CHECK (scheduled_at > NOW() - INTERVAL '1 hour')
 );
 
 CREATE TABLE meeting_participants (
@@ -174,7 +172,6 @@ CREATE TABLE document_comments (
   body        TEXT        NOT NULL,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CONSTRAINT chk_doc_comment_body CHECK (char_length(body) > 0 AND char_length(body) <= 2000)
 );
 
 COMMENT ON TABLE document_comments IS 'Comments on shared documents';
@@ -197,7 +194,6 @@ CREATE TABLE blog_comments (
   body       TEXT        NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CONSTRAINT chk_blog_comment_body CHECK (char_length(body) > 0 AND char_length(body) <= 2000)
 );
 
 COMMENT ON TABLE blog_comments IS 'Comments on blog posts';
@@ -271,9 +267,7 @@ ALTER TABLE notifications     ADD FOREIGN KEY (user_id)       REFERENCES users (
 ALTER TABLE audit_logs        ADD FOREIGN KEY (changed_by)    REFERENCES users (id)          ON DELETE SET NULL DEFERRABLE INITIALLY IMMEDIATE;
 
 --UNIQUE CONSTRAINT
-ALTER TABLE tutor_assignments
-  ADD CONSTRAINT unique_tutor_student_allocation UNIQUE (tutor_id, student_id)
-  WHERE deleted_at IS NULL
+ALTER TABLE tutor_assignments ADD CONSTRAINT unique_tutor_student_allocation UNIQUE (tutor_id, student_id);
   
 --INDEXES
 -- Roles & permissions

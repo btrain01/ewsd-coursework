@@ -6,9 +6,9 @@ namespace backend_app.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [ServiceFilter(typeof(AuthenticationAttribute))]
     public class UserController(UserService userService) : ControllerBase
     {
-        [ServiceFilter(typeof(AuthenticationAttribute))]
         [HttpGet("dashboard/{userId}")]
         public async Task<ActionResult> GetDashboard(int userId)
         {

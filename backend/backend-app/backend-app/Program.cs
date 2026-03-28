@@ -1,6 +1,7 @@
 using backend_app.Attributes;
 using backend_app.Context;
 using backend_app.Services;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,10 +24,13 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthenticationAttribute>();
 builder.Services.AddCors(options =>
 {
-        options.AddDefaultPolicy(policy => 
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+    options.AddDefaultPolicy(policy =>
+    {
+        policy
+        .AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
 });
 
 

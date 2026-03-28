@@ -16,7 +16,7 @@ namespace backend_app.Models
         public int MeetingId { get; set; }
         
         [Required]
-        public string FileName { get; set; }
+        public string Filename { get; set; }
         
         [Required]
         public string MimePath { get; set; }

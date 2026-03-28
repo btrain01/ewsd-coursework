@@ -11,7 +11,6 @@ namespace backend_app.Models
         
         public int RoleId { get; set; }
         public int PermissionId { get; set; }
-        public int GrantedBy { get; set; }
 
         public Permission Permission { get; set; }
         public Role Role { get; set; }

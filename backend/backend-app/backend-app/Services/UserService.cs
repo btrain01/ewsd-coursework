@@ -95,7 +95,7 @@ namespace backend_app.Services
                 .Select(d => new DocumentDTO()
                 {
                     Id = d.Id,
-                    FileName = d.FileName,
+                    FileName = d.Filename,
                     Description = d.Description,
                     MimeType = d.MimePath,
                     FileSizeBytes = d.FileSize,

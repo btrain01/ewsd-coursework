@@ -72,10 +72,10 @@
   // Role ID to dashboard mapping
   // Confirmed from database: 1=student, 2=tutor, 3=staff, 4=admin
   const ROLE_REDIRECTS = {
-    1: 'student-dashboard.html',
-    2: 'tutor-dashboard.html',
-    3: 'staff-dashboard.html',
-    4: 'staff-dashboard.html',
+    'STUDENT': 'student-dashboard.html',
+    'TUTOR': 'tutor-dashboard.html',
+    'STAFF': 'staff-dashboard.html',
+    'ADMIN': 'staff-dashboard.html',
   };
 
   async function loginUser() {
@@ -106,6 +106,8 @@
         // Resolve roleId using workaround
         const roleId = resolveRoleId(userToken);
 
+        console.log(`llll ${roleId}`)
+
         if (roleId && ROLE_REDIRECTS[roleId]) {
           window.location.href = ROLE_REDIRECTS[roleId];
         } else {
@@ -132,17 +134,23 @@
   // Priority 2: roleId stored in localStorage during registration
   function resolveRoleId(userToken) {
     // Priority 1 — roleName from backend (ready for when partner adds it)
-    const roleName = userToken.roleName || userToken.RoleName || '';
-    if (roleName) {
-      const nameMap = { student: 1, tutor: 2, staff: 3, admin: 4 };
-      const fromName = nameMap[roleName.toLowerCase()];
-      if (fromName) return fromName;
+    const roles = userToken.role;
+
+    if (roles.length >= 1) {
+      const nameMap = ['STUDENT', 'TUTOR', 'STAFF', 'ADMIN'];
+      // const fromName = nameMap[roleName.toLowerCase()];
+      const role = roles.find(r => nameMap.includes(r.name))
+      
+      console.log('reached here 1234')
+      if (role) return role.name;
     }
 
+    console.log('reached here 123')
+    
     // Priority 2 — roleId saved during registration
     const storedRoleId = localStorage.getItem('registeredRoleId');
     if (storedRoleId) return parseInt(storedRoleId);
-
+    
     return null;
   }
 

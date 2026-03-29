@@ -22,8 +22,15 @@ namespace backend_app.Models
         public string PasswordHash { get; set; }
         
         public bool IsLoggedIn { get; set; }
+        
+        public DateTime? LastLoginAt { get; set; }
 
         [JsonIgnore]
         public Role Role { get; set; }
+
+        public override string ToString()
+        {
+            return $"User (Id={Id}, Username={Username}, FirstName={FirstName}, LastName={LastName}, Email={Email}, RoleId={RoleId}, Password={PasswordHash}, IsLoggedIn={IsLoggedIn}, LastLoginAt={LastLoginAt}, CreatedAt={CreatedAt}, UpdatedAt={UpdatedAt})";
+        }
     }
 }

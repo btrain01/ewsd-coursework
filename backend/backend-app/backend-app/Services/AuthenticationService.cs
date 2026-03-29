@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend_app.Services
 {
-    public partial class AuthenticationService (ApplicationDBContext applicationDBContext)
+    public partial class AuthenticationService (ApplicationDBContext applicationDBContext, ILogger<AuthenticationService> logger)
     {
 
         public async Task<UserToken> Login(LoginRequest loginRequest)
@@ -20,7 +20,11 @@ namespace backend_app.Services
                 return null;
 
             user.IsLoggedIn = true;
+            user.LastLoginAt = DateTime.Now.ToUniversalTime();
+
+            logger.LogInformation("model at this point {}", user);
             await applicationDBContext.SaveChangesAsync();
+            
             return new UserToken()
             {
                 Id = user.Id,
@@ -28,6 +32,7 @@ namespace backend_app.Services
                 Role = [.. user.Role.RolePermissions
                     .Select(rp => new
                     {
+                        rp.Role.Name,
                         rp.Permission.Resource,
                         rp.Permission.Description
                     })]

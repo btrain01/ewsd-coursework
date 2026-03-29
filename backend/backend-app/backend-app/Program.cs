@@ -22,6 +22,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthenticationAttribute>();
+builder.Services.AddLogging();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>

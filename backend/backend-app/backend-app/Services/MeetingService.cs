@@ -50,8 +50,6 @@ namespace backend_app.Services
             await applicationDBContext.SaveChangesAsync();
 
             return await applicationDBContext.Meetings
-                .Include(m => m.Participants)
-                .ThenInclude(p => p.User)
                 .Where(m => m.Id == meeting.Id)
                 .FirstOrDefaultAsync();
         }

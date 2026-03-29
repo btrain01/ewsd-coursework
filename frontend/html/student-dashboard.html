@@ -1,446 +1,532 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TutorLink — Student Dashboard</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>eTutor — Student Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      :root {
-        --blue: #1a56db;
-        --blue-dark: #1a3a6b;
-        --blue-bg: #e8f0fe;
-        --white: #ffffff;
-        --gray-100: #f4f6f9;
-        --gray-300: #d1d5db;
-        --gray-500: #6b7280;
-        --gray-800: #1f2937;
-        --sidebar-w: 240px;
-      }
+    :root {
+      --blue:      #1a56db;
+      --blue-dark: #1a3a6b;
+      --blue-bg:   #e8f0fe;
+      --white:     #ffffff;
+      --gray-50:   #f8fafc;
+      --gray-100:  #f1f5f9;
+      --gray-200:  #e2e8f0;
+      --gray-300:  #d1d5db;
+      --gray-400:  #94a3b8;
+      --gray-500:  #6b7280;
+      --gray-700:  #374151;
+      --gray-800:  #1f2937;
+      --green:     #16a34a;
+      --green-bg:  #dcfce7;
+      --amber:     #d97706;
+      --amber-bg:  #fef3c7;
+      --red:       #dc2626;
+      --sidebar-w: 240px;
+      --header-h:  60px;
+      --radius:    12px;
+      --shadow:    0 1px 4px rgba(0,0,0,.07);
+      --shadow-md: 0 4px 16px rgba(0,0,0,.10);
+    }
 
-      body {
-        font-family: "Segoe UI", system-ui, sans-serif;
-        background: var(--gray-100);
-        color: var(--gray-800);
-        min-height: 100vh;
-      }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gray-100); color: var(--gray-800); min-height: 100vh; }
 
-      .layout {
-        display: flex;
-        min-height: 100vh;
-      }
+    .layout { display: flex; min-height: 100vh; }
 
-      /* side bar navigation */
-      .sidebar {
-        width: var(--sidebar-w);
-        background: var(--white);
-        border-right: 1px solid var(--gray-300);
-        display: flex;
-        flex-direction: column;
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        z-index: 100;
-        transition: transform 0.25s ease;
-      }
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--white);
+      border-right: 1px solid var(--gray-200);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; bottom: 0;
+      z-index: 100; transition: transform .25s ease;
+    }
+    .sidebar-profile {
+      padding: 24px 20px 20px;
+      display: flex; flex-direction: column; align-items: center;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .profile-pic {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--blue-bg); border: 3px solid var(--blue);
+      display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
+    }
+    .profile-pic svg { color: var(--blue); }
+    .profile-name { font-size: 14px; font-weight: 700; }
+    .profile-role { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+    .btn-profile {
+      margin-top: 12px; padding: 6px 20px;
+      background: var(--blue); color: var(--white);
+      font-size: 12px; font-weight: 600; font-family: inherit;
+      border: none; border-radius: 6px; cursor: pointer; transition: background .15s;
+    }
+    .btn-profile:hover { background: var(--blue-dark); }
+    .sidebar-nav { flex: 1; padding: 12px 0; }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 20px; font-size: 13.5px; color: var(--gray-700);
+      text-decoration: none; cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: background .15s, color .15s; user-select: none;
+    }
+    .nav-link:hover { background: var(--blue-bg); color: var(--blue); }
+    .nav-link.active { background: var(--blue-bg); color: var(--blue); font-weight: 600; border-left-color: var(--blue); }
+    .nav-link svg { opacity: .6; flex-shrink: 0; }
+    .nav-link:hover svg, .nav-link.active svg { opacity: 1; }
+    .sidebar-footer { padding: 12px 20px; border-top: 1px solid var(--gray-200); font-size: 11px; color: var(--gray-400); }
+    .sidebar-footer a { color: var(--gray-400); text-decoration: none; }
+    .sidebar-footer a:hover { color: var(--blue); }
 
-      .sidebar-profile {
-        padding: 28px 20px 22px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        border-bottom: 1px solid var(--gray-300);
-      }
+    /* ── MAIN ── */
+    .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
-      .profile-pic {
-        width: 78px;
-        height: 78px;
-        border-radius: 50%;
-        background: var(--blue-bg);
-        border: 3px solid var(--blue);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 11px;
-      }
-      .profile-pic svg {
-        color: var(--blue);
-      }
+    /* ── TOPBAR ── */
+    .topbar {
+      height: var(--header-h); background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      display: flex; align-items: center; padding: 0 24px; gap: 12px;
+      position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow);
+    }
+    .hamburger { display: none; flex-direction: column; gap: 4px; cursor: pointer; padding: 4px; }
+    .hamburger span { display: block; width: 20px; height: 2px; background: var(--gray-700); border-radius: 2px; }
+    .back-btn {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 13px; font-weight: 600; color: var(--gray-700);
+      background: var(--gray-100); border: 1px solid var(--gray-200);
+      border-radius: 7px; padding: 5px 12px; cursor: pointer; transition: background .15s;
+    }
+    .back-btn:hover { background: var(--gray-200); }
+    .search-wrap {
+      flex: 1; max-width: 380px;
+      display: flex; align-items: center; gap: 8px;
+      background: var(--gray-100); border: 1px solid var(--gray-200);
+      border-radius: 8px; padding: 7px 12px;
+    }
+    .search-wrap input { border: none; background: transparent; outline: none; font-size: 13px; color: var(--gray-800); width: 100%; font-family: inherit; }
+    .search-wrap svg { color: var(--gray-400); flex-shrink: 0; }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      border: 1px solid var(--gray-200); background: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; position: relative; color: var(--gray-600); transition: background .15s;
+    }
+    .icon-btn:hover { background: var(--gray-100); }
+    .notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--red); border: 2px solid var(--white); }
+    .topbar-av {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--blue); color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px; cursor: pointer;
+    }
 
-      .profile-name {
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--gray-800);
-      }
-      .profile-role {
-        font-size: 12px;
-        color: var(--gray-500);
-        margin-top: 2px;
-      }
+    /* ── CONTENT ── */
+    .content { padding: 24px; flex: 1; }
 
-      .btn-profile {
-        margin-top: 13px;
-        padding: 7px 22px;
-        background: var(--blue);
-        color: var(--white);
-        font-size: 13px;
-        font-weight: 600;
-        font-family: inherit;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background 0.15s;
-      }
-      .btn-profile:hover {
-        background: var(--blue-dark);
-      }
+    /* ── PAGE HEADER ── */
+    .page-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    }
+    .page-hdr-left { display: flex; align-items: center; gap: 10px; }
+    .page-hdr-left svg { color: var(--blue); }
+    .page-hdr-title { font-size: 17px; font-weight: 700; }
+    .view-btn {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 600; color: var(--gray-600);
+      background: var(--white); border: 1px solid var(--gray-200);
+      border-radius: 7px; padding: 5px 12px; cursor: pointer; transition: background .15s;
+    }
+    .view-btn:hover { background: var(--gray-100); }
+    .schedule-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 600; color: var(--white);
+      background: var(--blue); border: none; border-radius: 8px;
+      padding: 8px 16px; cursor: pointer; transition: background .15s; font-family: inherit;
+    }
+    .schedule-btn:hover { background: var(--blue-dark); }
 
-      .sidebar-nav {
-        flex: 1;
-        padding: 14px 0;
-      }
+    /* ── SUMMARY CARDS ── */
+    .summary-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+    .s-card {
+      background: var(--white); border-radius: var(--radius);
+      border: 1px solid var(--gray-200); padding: 16px 20px;
+      box-shadow: var(--shadow); display: flex; align-items: center;
+      justify-content: space-between; cursor: pointer;
+      transition: box-shadow .2s, transform .2s; text-decoration: none; color: inherit;
+    }
+    .s-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+    .s-label { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+    .s-sub   { font-size: 12px; color: var(--gray-500); }
+    .s-right { display: flex; align-items: center; gap: 8px; }
+    .s-num {
+      font-size: 20px; font-weight: 800; color: var(--blue);
+      background: var(--blue-bg); width: 42px; height: 42px;
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    }
+    .s-meta { font-size: 11px; color: var(--gray-400); white-space: nowrap; }
 
-      .nav-link {
-        display: flex;
-        align-items: center;
-        gap: 11px;
-        padding: 10px 20px;
-        font-size: 14px;
-        color: var(--gray-800);
-        text-decoration: none;
-        cursor: pointer;
-        border-left: 3px solid transparent;
-        transition:
-          background 0.15s,
-          color 0.15s;
-        user-select: none;
-      }
-      .nav-link:hover {
-        background: var(--blue-bg);
-        color: var(--blue);
-      }
-      .nav-link.active {
-        background: var(--blue-bg);
-        color: var(--blue);
-        font-weight: 600;
-        border-left-color: var(--blue);
-      }
-      .nav-link svg {
-        opacity: 0.65;
-        flex-shrink: 0;
-      }
-      .nav-link:hover svg,
-      .nav-link.active svg {
-        opacity: 1;
-      }
+    /* ── PANELS ── */
+    .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .panel {
+      background: var(--white); border-radius: var(--radius);
+      border: 1px solid var(--gray-200); box-shadow: var(--shadow);
+      display: flex; flex-direction: column;
+    }
+    .panel-hdr {
+      padding: 14px 18px; border-bottom: 1px solid var(--gray-100);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .panel-title { font-size: 14px; font-weight: 700; }
+    .panel-action { font-size: 12px; color: var(--blue); font-weight: 600; cursor: pointer; }
+    .panel-action:hover { text-decoration: underline; }
+    .panel-meta { font-size: 11px; color: var(--gray-400); }
+    .panel-body { padding: 4px 0; }
 
-      .sidebar-footer {
-        padding: 14px 20px;
-        border-top: 1px solid var(--gray-300);
-        font-size: 12px;
-        color: var(--gray-500);
-      }
+    /* meeting rows */
+    .m-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 18px; border-bottom: 1px solid var(--gray-100);
+      transition: background .15s;
+    }
+    .m-row:last-child { border-bottom: none; }
+    .m-row:hover { background: var(--gray-50); }
+    .m-icon {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: var(--blue-bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .m-icon svg { color: var(--blue); }
+    .m-info { flex: 1; min-width: 0; }
+    .m-date { font-size: 13px; font-weight: 700; }
+    .m-time { font-size: 12px; color: var(--gray-500); }
+    .m-av {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--blue); color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 11px; flex-shrink: 0;
+    }
+    .m-person { flex: 1; min-width: 0; }
+    .m-name { font-size: 13px; font-weight: 600; }
+    .m-role { font-size: 11px; color: var(--gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-      /* main body page */
-      .main {
-        margin-left: var(--sidebar-w);
-        flex: 1;
-        padding: 40px;
-      }
-      .page-heading {
-        font-size: 22px;
-        font-weight: 700;
-        color: var(--blue-dark);
-        margin-bottom: 16px;
-      }
-      .lorem {
-        max-width: 660px;
-        font-size: 14px;
-        line-height: 1.75;
-        color: var(--gray-500);
-      }
-      .lorem p + p {
-        margin-top: 14px;
-      }
+    /* pill */
+    .pill { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+    .pill-pending { background: var(--amber-bg); color: var(--amber); }
+    .pill-virtual { background: var(--blue-bg);  color: var(--blue); }
+    .pill-done    { background: var(--green-bg); color: var(--green); }
 
-      /* hamburger menu for responsiveness */
-      .hamburger {
-        display: none;
-        position: fixed;
-        top: 14px;
-        left: 14px;
-        z-index: 200;
-        background: var(--white);
-        border: 1px solid var(--gray-300);
-        border-radius: 8px;
-        padding: 8px 10px;
-        cursor: pointer;
-        flex-direction: column;
-        gap: 5px;
-      }
-      .hamburger span {
-        display: block;
-        width: 20px;
-        height: 2px;
-        background: var(--gray-800);
-        border-radius: 2px;
-      }
+    /* message rows */
+    .msg-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 11px 18px; border-bottom: 1px solid var(--gray-100);
+      cursor: pointer; transition: background .15s;
+    }
+    .msg-row:last-child { border-bottom: none; }
+    .msg-row:hover { background: var(--gray-50); }
+    .msg-av {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--blue); color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 12px; flex-shrink: 0;
+    }
+    .msg-body { flex: 1; min-width: 0; }
+    .msg-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 2px; }
+    .msg-name { font-size: 13px; font-weight: 600; }
+    .msg-time { font-size: 11px; color: var(--gray-400); white-space: nowrap; }
+    .msg-preview { font-size: 12px; color: var(--gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 5px; }
+    .msg-actions { display: flex; align-items: center; gap: 6px; }
+    .view-btn-sm {
+      font-size: 11px; font-weight: 600; padding: 3px 10px;
+      background: var(--blue); color: var(--white);
+      border: none; border-radius: 6px; cursor: pointer; font-family: inherit; transition: background .15s;
+    }
+    .view-btn-sm:hover { background: var(--blue-dark); }
 
-      .overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.35);
-        z-index: 90;
-      }
-      .overlay.show {
-        display: block;
-      }
+    /* overlay */
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 90; }
+    .overlay.show { display: block; }
 
-      @media (max-width: 768px) {
-        .sidebar {
-          transform: translateX(-100%);
-        }
-        .sidebar.open {
-          transform: translateX(0);
-          box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12);
-        }
-        .main {
-          margin-left: 0;
-          padding: 72px 20px 30px;
-        }
-        .hamburger {
-          display: flex;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
-    <button class="hamburger" onclick="openSidebar()">
-      <span></span><span></span><span></span>
-    </button>
+    /* responsive */
+    @media (max-width: 960px) { .panels { grid-template-columns: 1fr; } }
+    @media (max-width: 860px) { .summary-row { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,.12); }
+      .main { margin-left: 0; }
+      .hamburger { display: flex; }
+      .content { padding: 16px; }
+      .back-btn { display: none; }
+    }
+    @media (max-width: 480px) { .summary-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
 
-    <div class="layout">
-      <aside class="sidebar" id="sidebar">
-        <div class="sidebar-profile">
-          <div class="profile-pic">
-            <svg
-              width="42"
-              height="42"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-            >
-              <circle cx="12" cy="8" r="4" />
-              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-            </svg>
-          </div>
-          <div class="profile-name" id="profileName">—</div>
-          <div class="profile-role">Student</div>
-          <button class="btn-profile">View Profile</button>
-        </div>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
-        <nav class="sidebar-nav">
-          <a class="nav-link active" onclick="setActive(this)">
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-            >
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9,22 9,12 15,12 15,22" />
-            </svg>
-            Home
-          </a>
-          <a class="nav-link" onclick="setActive(this)">
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
-            </svg>
-            About
-          </a>
-          <a class="nav-link" onclick="setActive(this)">
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-            >
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            My Tutor
-          </a>
-          <a class="nav-link" onclick="setActive(this)">
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
-              />
-            </svg>
-            Messages
-          </a>
-          <a class="nav-link" onclick="setActive(this)">
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg>
-            Meetings
-          </a>
-          <a class="nav-link" onclick="setActive(this)">
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-              />
-              <polyline points="14,2 14,8 20,8" />
-            </svg>
-            Documents
-          </a>
-          <a class="nav-link" onclick="setActive(this)">
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 20h9" />
-              <path
-                d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"
-              />
-            </svg>
-            Blog
-          </a>
-          <a class="nav-link" onclick="setActive(this)">
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.84a16 16 0 0 0 6 6l.36-.36a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"
-              />
-            </svg>
-            Contact Us
-          </a>
-        </nav>
+<div class="layout">
 
-        <div class="sidebar-footer">
-          © 2026 eTutor &nbsp;·&nbsp;
-          <a href="#" onclick="logoutUser()" style="color:var(--gray-500);text-decoration:none;">Sign Out</a>
-        </div>
-      </aside>
-
-      <main class="main">
-        <div class="page-heading">Dashboard</div>
-        <div class="lorem">
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
-          </p>
-          <p>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-            cupidatat non proident, sunt in culpa qui officia deserunt mollit
-            anim id est laborum.
-          </p>
-          <p>
-            Pellentesque habitant morbi tristique senectus et netus et malesuada
-            fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae,
-            ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam
-            egestas semper.
-          </p>
-        </div>
-      </main>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-profile">
+      <div class="profile-pic">
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+      <div class="profile-name" id="profileName">—</div>
+      <div class="profile-role">Student</div>
+      <button class="btn-profile">View Profile</button>
     </div>
+    <nav class="sidebar-nav">
+      <a class="nav-link active" onclick="setActive(this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-link" onclick="setActive(this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Messages
+      </a>
+      <a class="nav-link" onclick="setActive(this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Meetings
+      </a>
+      <a class="nav-link" onclick="setActive(this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        Documents
+      </a>
+      <a class="nav-link" onclick="setActive(this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Blog
+      </a>
+      <a class="nav-link" onclick="setActive(this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+        Profile &amp; Settings
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      © 2026 eTutor &nbsp;·&nbsp;
+      <a href="#" onclick="logoutUser()">Sign Out</a>
+    </div>
+  </aside>
 
-    <script>
-      const API_BASE = 'http://localhost:5188';
+  <!-- MAIN -->
+  <div class="main">
 
-      // Auth guard — redirect to login if no session exists
-      const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-      if (!currentUser) {
-        window.location.href = 'login.html';
-      } else {
-        document.getElementById('profileName').textContent = currentUser.username || 'User';
-      }
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="hamburger" onclick="openSidebar()">
+        <span></span><span></span><span></span>
+      </div>
+      <button class="back-btn">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg>
+        Back
+      </button>
+      <div class="search-wrap">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search..." />
+      </div>
+      <div class="topbar-right">
+        <div class="icon-btn">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-dot"></span>
+        </div>
+        <div class="topbar-av" id="topbarAv">—</div>
+      </div>
+    </header>
 
-      async function logoutUser() {
-        try {
-          await fetch(`${API_BASE}/Authentication/logout/${currentUser.id}`, { method: 'POST' });
-        } catch(e) {
-          console.warn('Logout request failed, clearing session anyway.', e);
-        }
-        localStorage.removeItem('currentUser');
-        localStorage.removeItem('registeredRoleId');
-        localStorage.removeItem('registeredUsername');
-        window.location.href = 'login.html';
-      }
+    <!-- Content -->
+    <div class="content">
 
-      function openSidebar() {
-        document.getElementById("sidebar").classList.add("open");
-        document.getElementById("overlay").classList.add("show");
-      }
-      function closeSidebar() {
-        document.getElementById("sidebar").classList.remove("open");
-        document.getElementById("overlay").classList.remove("show");
-      }
-      function setActive(el) {
-        document.querySelectorAll(".nav-link").forEach((l) => l.classList.remove("active"));
-        el.classList.add("active");
-        if (window.innerWidth <= 768) closeSidebar();
-      }
-    </script>
-  </body>
+      <!-- Page header -->
+      <div class="page-hdr">
+        <div class="page-hdr-left">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span class="page-hdr-title">Meetings</span>
+          <button class="view-btn">
+            View level
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+        </div>
+        <button class="schedule-btn">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Schedule Meeting
+        </button>
+      </div>
+
+      <!-- Summary cards -->
+      <div class="summary-row">
+        <a class="s-card">
+          <div>
+            <div class="s-label">Messages</div>
+            <div class="s-sub">2 Unread</div>
+          </div>
+          <div class="s-right">
+            <div class="s-num">2</div>
+            <span style="font-size:18px;color:var(--gray-300)">›</span>
+          </div>
+        </a>
+        <a class="s-card">
+          <div>
+            <div class="s-label">Meetings</div>
+            <div class="s-sub">1 Scheduled</div>
+          </div>
+          <div class="s-right">
+            <div class="s-num">1</div>
+            <span style="font-size:18px;color:var(--gray-300)">›</span>
+          </div>
+        </a>
+        <a class="s-card">
+          <div>
+            <div class="s-label">Documents</div>
+            <div class="s-sub">5 Shared</div>
+          </div>
+          <div class="s-right">
+            <span class="s-meta">3 hours ago</span>
+            <div class="s-num" style="font-size:16px">5</div>
+            <span style="font-size:18px;color:var(--gray-300)">›</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Panels -->
+      <div class="panels">
+
+        <!-- Upcoming Meetings -->
+        <div class="panel">
+          <div class="panel-hdr">
+            <span class="panel-title">Upcoming Meetings</span>
+            <a class="panel-action">View all →</a>
+          </div>
+          <div class="panel-body">
+            <!-- Meeting 1 header row -->
+            <div class="m-row">
+              <div class="m-icon">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="m-info">
+                <div class="m-date">Thu, April 25</div>
+                <div class="m-time">1:00 PM</div>
+              </div>
+              <span class="pill pill-pending">⊙ Pending</span>
+            </div>
+            <!-- Meeting 1 person row -->
+            <div class="m-row">
+              <div class="m-av">BM</div>
+              <div class="m-person">
+                <div class="m-name">Mr Bright Mulenga</div>
+                <div class="m-role">Personal Tutor · Progress Review</div>
+              </div>
+              <span class="pill pill-virtual">Virtual</span>
+            </div>
+            <!-- Meeting 2 header row -->
+            <div class="m-row" style="margin-top:4px">
+              <div class="m-icon">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="m-info">
+                <div class="m-date">Fri, May 02</div>
+                <div class="m-time">10:00 AM</div>
+              </div>
+              <span class="pill pill-done">Confirmed</span>
+            </div>
+            <!-- Meeting 2 person row -->
+            <div class="m-row">
+              <div class="m-av">BM</div>
+              <div class="m-person">
+                <div class="m-name">Mr Bright Mulenga</div>
+                <div class="m-role">Personal Tutor · Module Discussion</div>
+              </div>
+              <span class="pill pill-virtual">Virtual</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Messages -->
+        <div class="panel">
+          <div class="panel-hdr">
+            <span class="panel-title">Recent Messages</span>
+            <span class="panel-meta">3 hours ago &nbsp;<a class="panel-action" style="font-size:13px">›</a></span>
+          </div>
+          <div class="panel-body">
+            <div class="msg-row">
+              <div class="msg-av">BM</div>
+              <div class="msg-body">
+                <div class="msg-top">
+                  <span class="msg-name">Mr Bright Mulenga</span>
+                  <span class="msg-time">Just now</span>
+                </div>
+                <div class="msg-preview">Thanks for the file, checking it now...</div>
+                <div class="msg-actions">
+                  <span class="pill pill-pending" style="font-size:10px;padding:2px 7px">In Progress</span>
+                </div>
+              </div>
+            </div>
+            <div class="msg-row">
+              <div class="msg-av" style="background:var(--gray-400)">ME</div>
+              <div class="msg-body">
+                <div class="msg-top">
+                  <span class="msg-name">You</span>
+                  <span class="msg-time">10 mins ago</span>
+                </div>
+                <div class="msg-preview">You're welcome, glad you found it helpful!</div>
+                <div class="msg-actions">
+                  <button class="view-btn-sm">View</button>
+                </div>
+              </div>
+            </div>
+            <div class="msg-row">
+              <div class="msg-av">BM</div>
+              <div class="msg-body">
+                <div class="msg-top">
+                  <span class="msg-name">Mr Bright Mulenga</span>
+                  <span class="msg-time">Yesterday</span>
+                </div>
+                <div class="msg-preview">Please review the feedback on your draft before our session.</div>
+                <div class="msg-actions">
+                  <button class="view-btn-sm">View</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /panels -->
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+  const API_BASE = 'http://localhost:5188';
+
+  // Auth guard
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+  if (!currentUser) {
+    window.location.href = 'login.html';
+  } else {
+    const name = currentUser.username || 'Student';
+    document.getElementById('profileName').textContent = name;
+    document.getElementById('topbarAv').textContent = name.substring(0, 2).toUpperCase();
+  }
+
+  async function logoutUser() {
+    try {
+      await fetch(`${API_BASE}/Authentication/logout/${currentUser.id}`, { method: 'POST' });
+    } catch(e) { console.warn('Logout failed, clearing session anyway.', e); }
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('registeredRoleId');
+    localStorage.removeItem('registeredUsername');
+    window.location.href = 'login.html';
+  }
+
+  function openSidebar()  { document.getElementById('sidebar').classList.add('open');    document.getElementById('overlay').classList.add('show'); }
+  function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+  function setActive(el)  {
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    el.classList.add('active');
+    if (window.innerWidth <= 768) closeSidebar();
+  }
+</script>
+</body>
 </html>

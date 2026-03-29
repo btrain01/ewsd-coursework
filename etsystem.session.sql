@@ -316,3 +316,17 @@ CREATE INDEX idx_notifications_type_created ON notifications(type, created_at);
 CREATE INDEX idx_audit_logs_table_record ON audit_logs(table_name, record_id);
 CREATE INDEX idx_audit_logs_changed_by_created ON audit_logs(changed_by, created_at);
 CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at);
+
+-- permission data
+INSERT INTO roles (name, description) VALUES
+  ('STUDENT', 'Student role with access to personal dashboard'),
+  ('TUTOR', 'Personal tutor role with access to tutee dashboards'),
+  ('STAFF', 'Authorised staff with full oversight access'),
+  ('ADMIN', 'System administrator with full access');
+
+INSERT INTO permissions (resource, description) VALUES
+	('test', 'test');
+
+INSERT INTO role_permissions (role_id, permission_id) VALUES
+	(1, 1);
+

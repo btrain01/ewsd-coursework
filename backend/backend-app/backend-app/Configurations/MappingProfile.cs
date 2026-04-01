@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using backend_app.DTOs;
+using backend_app.Models;
 using backend_app.TypeConverters;
 
 namespace backend_app.Configurations
@@ -9,6 +10,7 @@ namespace backend_app.Configurations
         public MappingProfile()
         {
             CreateMap<string, UserDTO>().ConvertUsing<JsonToObjectConverter<UserDTO>>();
+            CreateMap<CreateMessageDTO, Message>();
         }
     }
 }

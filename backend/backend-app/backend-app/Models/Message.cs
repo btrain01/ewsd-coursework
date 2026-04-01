@@ -25,9 +25,11 @@ namespace backend_app.Models
         public bool IsRead { get; set; } = false;
 
         [ForeignKey(nameof(SenderId))]
+        [InverseProperty("SentMessages")]
         public User Sender { get; set; } = null!;
 
         [ForeignKey(nameof(RecipientId))]
+        [InverseProperty("ReceivedMessages")]
         public User Receiver { get; set; } = null!;
     }
 }

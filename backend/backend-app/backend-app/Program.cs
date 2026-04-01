@@ -1,8 +1,10 @@
 using backend_app.Attributes;
 using backend_app.Context;
+using backend_app.DTOs;
 using backend_app.Services;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Channels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,11 @@ builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthenticationAttribute>();
 builder.Services.AddScoped<MeetingService>();
+builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<AuthenticationUserContext>();
+builder.Services.AddSingleton<MessageChannelService>();
+builder.Services.AddSingleton(sp => sp.GetRequiredService<MessageChannelService>().GetGlobalWriter());
+
 builder.Services.AddLogging();
 builder.Services.AddCors(options =>
 {

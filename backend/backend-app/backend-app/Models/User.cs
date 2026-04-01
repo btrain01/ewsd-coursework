@@ -28,9 +28,10 @@ namespace backend_app.Models
         [JsonIgnore]
         public Role Role { get; set; }
 
-        public override string ToString()
-        {
-            return $"User (Id={Id}, Username={Username}, FirstName={FirstName}, LastName={LastName}, Email={Email}, RoleId={RoleId}, Password={PasswordHash}, IsLoggedIn={IsLoggedIn}, LastLoginAt={LastLoginAt}, CreatedAt={CreatedAt}, UpdatedAt={UpdatedAt})";
-        }
+        [JsonIgnore]
+        public ICollection<Message> SentMessages { get; set; } = [];
+        
+        [JsonIgnore]
+        public ICollection<Message> ReceivedMessages { get; set; } = [];
     }
 }

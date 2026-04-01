@@ -8,8 +8,6 @@ namespace backend_app.Services
     {
         private readonly ConcurrentDictionary<int, Channel<CreateMessageDTO>> _userChannels = new();
 
-        // Called by Program.cs to satisfy any direct ChannelWriter<T> injection (optional)
-        // Only needed if other services inject ChannelWriter<CreateMessageDTO> directly
         public ChannelWriter<CreateMessageDTO> GetGlobalWriter()
             => throw new InvalidOperationException(
                 "Use GetWriterForUser(userId) instead of injecting ChannelWriter directly.");
@@ -27,11 +25,13 @@ namespace backend_app.Services
         }
 
         private Channel<CreateMessageDTO> GetOrCreate(int userId)
-            => _userChannels.GetOrAdd(userId, _ =>
+        {
+            return _userChannels.GetOrAdd(userId, _ =>
                 Channel.CreateUnbounded<CreateMessageDTO>(new UnboundedChannelOptions
                 {
-                    SingleReader = true,   // one SSE stream per user
-                    SingleWriter = false   // multiple senders allowed
+                    SingleReader = true,
+                    SingleWriter = false
                 }));
+        }
     }
 }

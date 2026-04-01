@@ -7,10 +7,10 @@ namespace backend_app.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [ServiceFilter(typeof(AuthenticationAttribute))]
     public class MesssageController(MessageService messageService) : ControllerBase
     {
         [HttpPost("send")]
+        [ServiceFilter(typeof(AuthenticationAttribute))]
         public async Task<ActionResult> SendMessage([FromBody] CreateMessageDTO createMessageDTO)
         {
             var message = await messageService.CreateMessage(createMessageDTO);
@@ -22,9 +22,9 @@ namespace backend_app.Controllers
         }
 
         [HttpGet("recent")]
-        public async Task GetIncomingMessages(CancellationToken cancellationToken)
+        public async Task GetIncomingMessages([FromQuery(Name = "auth")] String userToken, CancellationToken cancellationToken)
         {
-            var result = messageService.OpenStream(cancellationToken);
+            var result = messageService.OpenStream(userToken, cancellationToken);
             
             await result.ExecuteAsync(HttpContext);
         }

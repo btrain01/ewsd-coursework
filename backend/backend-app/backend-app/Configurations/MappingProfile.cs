@@ -10,6 +10,7 @@ namespace backend_app.Configurations
         public MappingProfile()
         {
             CreateMap<string, UserDTO>().ConvertUsing<JsonToObjectConverter<UserDTO>>();
+            CreateMap<string, UserToken>().ConvertUsing<JsonToObjectConverter<UserToken>>();
             CreateMap<CreateMessageDTO, Message>();
         }
     }

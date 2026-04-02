@@ -26,6 +26,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthenticationAttribute>();
 builder.Services.AddScoped<MeetingService>();
 builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<BlogService>();
 builder.Services.AddScoped<AuthenticationUserContext>();
 builder.Services.AddSingleton<MessageChannelService>();
 builder.Services.AddSingleton(sp => sp.GetRequiredService<MessageChannelService>().GetGlobalWriter());

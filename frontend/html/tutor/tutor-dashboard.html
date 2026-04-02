@@ -414,7 +414,7 @@
       // Auth guard — redirect to login if no session exists
       const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
       if (!currentUser) {
-        window.location.href = 'login.html';
+        window.location.href = '../login.html';
       } else {
         document.getElementById('profileName').textContent = currentUser.username || 'User';
       }
@@ -428,7 +428,7 @@
         localStorage.removeItem('currentUser');
         localStorage.removeItem('registeredRoleId');
         localStorage.removeItem('registeredUsername');
-        window.location.href = 'login.html';
+        window.location.href = '../login.html';
       }
 
       function openSidebar() {

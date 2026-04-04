@@ -42,10 +42,7 @@ namespace backend_app.Services
             return Results.ServerSentEvents(messages, eventType: "messages");
         }
 
-        private async IAsyncEnumerable<CreateMessageDTO> StreamForUser(
-            ChannelReader<CreateMessageDTO> reader,
-            int userId,
-            [EnumeratorCancellation] CancellationToken cancellationToken)
+        private async IAsyncEnumerable<CreateMessageDTO> StreamForUser(ChannelReader<CreateMessageDTO> reader, int userId, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             try
             {

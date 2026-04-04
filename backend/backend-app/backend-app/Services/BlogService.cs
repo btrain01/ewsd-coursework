@@ -31,19 +31,6 @@ namespace backend_app.Services
                 .ToListAsync();
         }
 
-        public async Task<List<BlogPost>> GetStudentBlogPosts(int tutorId, int studentId)
-        {
-            /*
-             The fetch methods are designed to return default values if no records are found. For example
-            FirstOrDefaultAsync() or FirstOrDefault() return the default value of an object if no value was found. 
-            Which in this case is a null value so neo Need to check for a null value and return that. 
-             */
-            return await applicationDBContext.BlogPosts
-                .Where(bp => bp.AuthorId == studentId)
-                .OrderByDescending(bp => bp.CreatedAt)
-                .ToListAsync();
-        }
-
         public async Task<BlogPost?> UpdateBlogPost(int authorId, int postId, UpdateBlogPostDTO dto)
         {
             var blogPost = await applicationDBContext.BlogPosts

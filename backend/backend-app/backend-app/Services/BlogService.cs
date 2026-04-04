@@ -33,13 +33,11 @@ namespace backend_app.Services
 
         public async Task<List<BlogPost>> GetStudentBlogPosts(int tutorId, int studentId)
         {
-            // Verify the tutor is actually assigned to this student
-            var isAssigned = await applicationDBContext.TutorAssignments
-                .AnyAsync(ts => ts.TutorId == tutorId && ts.StudentId == studentId);
-
-            if (!isAssigned)
-                return [];
-
+            /*
+             The fetch methods are designed to return default values if no records are found. For example
+            FirstOrDefaultAsync() or FirstOrDefault() return the default value of an object if no value was found. 
+            Which in this case is a null value so neo Need to check for a null value and return that. 
+             */
             return await applicationDBContext.BlogPosts
                 .Where(bp => bp.AuthorId == studentId)
                 .OrderByDescending(bp => bp.CreatedAt)
@@ -72,9 +70,6 @@ namespace backend_app.Services
                 .Where(bp => bp.Id == postId && bp.AuthorId == authorId)
                 .FirstOrDefaultAsync();
 
-            if (blogPost == null)
-                return false;
-
             applicationDBContext.BlogPosts.Remove(blogPost);
             await applicationDBContext.SaveChangesAsync();
             return true;
@@ -82,12 +77,6 @@ namespace backend_app.Services
 
         public async Task<BlogComment?> AddComment(int authorId, int postId, CreateBlogCommentDTO dto)
         {
-            var postExists = await applicationDBContext.BlogPosts
-                .AnyAsync(bp => bp.Id == postId);
-
-            if (!postExists)
-                return null;
-
             var comment = new BlogComment
             {
                 PostId = postId,

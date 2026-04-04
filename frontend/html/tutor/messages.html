@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eTutor — Messages</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      :root {
+        --blue: #1a56db; --blue-dark: #1a3a6b; --blue-bg: #e8f0fe;
+        --white: #ffffff; --gray-50: #f8fafc; --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0; --gray-300: #d1d5db; --gray-400: #94a3b8;
+        --gray-500: #6b7280; --gray-700: #374151; --gray-800: #1f2937;
+        --green: #16a34a; --green-bg: #dcfce7; --amber: #d97706;
+        --amber-bg: #fef3c7; --red: #dc2626; --red-bg: #fee2e2;
+        --sidebar-w: 240px; --header-h: 60px; --radius: 12px;
+        --shadow: 0 1px 4px rgba(0,0,0,.07); --shadow-md: 0 4px 16px rgba(0,0,0,.10);
+      }
+      body { font-family: "Segoe UI", system-ui, sans-serif; background: var(--gray-100); color: var(--gray-800); min-height: 100vh; }
+      .layout { display: flex; min-height: 100vh; }
+
+      /* SIDEBAR */
+      .sidebar { width: var(--sidebar-w); background: var(--white); border-right: 1px solid var(--gray-200); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; transition: transform .25s ease; }
+      .sidebar-profile { padding: 24px 20px 20px; display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid var(--gray-200); }
+      .profile-pic { width: 72px; height: 72px; border-radius: 50%; background: var(--blue-bg); border: 3px solid var(--blue); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+      .profile-pic svg { color: var(--blue); }
+      .profile-name { font-size: 14px; font-weight: 700; }
+      .profile-role { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+      .btn-profile { margin-top: 12px; padding: 6px 20px; background: var(--blue); color: var(--white); font-size: 12px; font-weight: 600; font-family: inherit; border: none; border-radius: 6px; cursor: pointer; transition: background .15s; }
+      .btn-profile:hover { background: var(--blue-dark); }
+      .sidebar-nav { flex: 1; padding: 12px 0; }
+      .nav-link { display: flex; align-items: center; gap: 10px; padding: 9px 20px; font-size: 13.5px; color: var(--gray-700); text-decoration: none; cursor: pointer; border-left: 3px solid transparent; transition: background .15s, color .15s; user-select: none; }
+      .nav-link:hover { background: var(--blue-bg); color: var(--blue); }
+      .nav-link.active { background: var(--blue-bg); color: var(--blue); font-weight: 600; border-left-color: var(--blue); }
+      .nav-link svg { opacity: .6; flex-shrink: 0; }
+      .nav-link:hover svg, .nav-link.active svg { opacity: 1; }
+      .sidebar-footer { padding: 12px 20px; border-top: 1px solid var(--gray-200); font-size: 11px; color: var(--gray-400); }
+
+      /* TOPBAR */
+      .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+      .topbar { height: var(--header-h); background: var(--white); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; padding: 0 24px; gap: 12px; position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow); }
+      .hamburger { display: none; flex-direction: column; gap: 4px; cursor: pointer; padding: 4px; }
+      .hamburger span { display: block; width: 20px; height: 2px; background: var(--gray-700); border-radius: 2px; }
+      .back-btn { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: var(--gray-700); background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 7px; padding: 5px 12px; cursor: pointer; transition: background .15s; text-decoration: none; }
+      .back-btn:hover { background: var(--gray-200); }
+      .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+      .icon-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--gray-200); background: var(--white); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; color: var(--gray-600); transition: background .15s; }
+      .icon-btn:hover { background: var(--gray-100); }
+      .notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--red); border: 2px solid var(--white); }
+      .topbar-av { width: 34px; height: 34px; border-radius: 50%; background: var(--blue); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; cursor: pointer; }
+
+      /* CONTENT */
+      .content { padding: 24px; flex: 1; }
+      .page-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+      .page-hdr-left { display: flex; align-items: center; gap: 10px; }
+      .page-hdr-left svg { color: var(--blue); }
+      .page-hdr-title { font-size: 17px; font-weight: 700; }
+
+      /* TABS */
+      .tabs { display: flex; gap: 2px; background: var(--gray-200); padding: 3px; border-radius: 9px; }
+      .tab-btn { padding: 6px 18px; border-radius: 7px; font-size: 13px; font-weight: 600; font-family: inherit; border: none; cursor: pointer; background: transparent; color: var(--gray-500); transition: all .15s; }
+      .tab-btn.active { background: var(--white); color: var(--blue); box-shadow: var(--shadow); }
+
+      /* COMPOSE BTN */
+      .compose-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: var(--blue); color: var(--white); font-size: 13px; font-weight: 600; font-family: inherit; border: none; border-radius: 8px; cursor: pointer; transition: background .15s; }
+      .compose-btn:hover { background: var(--blue-dark); }
+
+      /* MESSAGES LAYOUT */
+      .msg-layout { display: grid; grid-template-columns: 340px 1fr; gap: 16px; height: calc(100vh - 180px); min-height: 400px; }
+      .msg-list-panel { background: var(--white); border-radius: var(--radius); border: 1px solid var(--gray-200); box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; }
+      .msg-list-search { padding: 12px 16px; border-bottom: 1px solid var(--gray-100); }
+      .search-input { width: 100%; padding: 7px 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 13px; font-family: inherit; outline: none; color: var(--gray-800); background: var(--gray-50); }
+      .search-input:focus { border-color: var(--blue); background: var(--white); }
+      .msg-list-body { flex: 1; overflow-y: auto; }
+      .msg-item { display: flex; align-items: flex-start; gap: 10px; padding: 13px 16px; border-bottom: 1px solid var(--gray-100); cursor: pointer; transition: background .15s; }
+      .msg-item:last-child { border-bottom: none; }
+      .msg-item:hover { background: var(--gray-50); }
+      .msg-item.active { background: var(--blue-bg); }
+      .msg-item.unread .msg-item-subject { font-weight: 700; color: var(--gray-800); }
+      .msg-av { width: 36px; height: 36px; border-radius: 50%; background: var(--blue); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
+      .msg-item-body { flex: 1; min-width: 0; }
+      .msg-item-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+      .msg-item-from { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+      .msg-item-time { font-size: 11px; color: var(--gray-400); white-space: nowrap; }
+      .msg-item-subject { font-size: 12px; color: var(--gray-600); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .msg-item-preview { font-size: 12px; color: var(--gray-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); flex-shrink: 0; margin-top: 4px; }
+
+      /* THREAD PANEL */
+      .thread-panel { background: var(--white); border-radius: var(--radius); border: 1px solid var(--gray-200); box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; }
+      .thread-hdr { padding: 16px 20px; border-bottom: 1px solid var(--gray-100); }
+      .thread-subject { font-size: 16px; font-weight: 700; color: var(--gray-800); margin-bottom: 4px; }
+      .thread-meta { font-size: 12px; color: var(--gray-500); }
+      .thread-body { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
+      .bubble-wrap { display: flex; gap: 10px; }
+      .bubble-wrap.me { flex-direction: row-reverse; }
+      .bubble-av { width: 32px; height: 32px; border-radius: 50%; background: var(--blue); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; flex-shrink: 0; }
+      .bubble-av.me-av { background: var(--gray-400); }
+      .bubble { max-width: 70%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
+      .bubble.them { background: var(--gray-100); color: var(--gray-800); border-bottom-left-radius: 4px; }
+      .bubble.me   { background: var(--blue); color: var(--white); border-bottom-right-radius: 4px; }
+      .bubble-time { font-size: 10px; margin-top: 4px; color: var(--gray-400); }
+      .bubble-wrap.me .bubble-time { text-align: right; }
+
+      /* COMPOSE AREA */
+      .compose-area { padding: 14px 20px; border-top: 1px solid var(--gray-100); display: flex; gap: 10px; align-items: flex-end; }
+      .compose-input { flex: 1; padding: 10px 14px; border: 1px solid var(--gray-200); border-radius: 10px; font-size: 13px; font-family: inherit; outline: none; resize: none; min-height: 42px; max-height: 120px; color: var(--gray-800); transition: border-color .15s; }
+      .compose-input:focus { border-color: var(--blue); }
+      .send-btn { padding: 10px 18px; background: var(--blue); color: var(--white); font-size: 13px; font-weight: 600; font-family: inherit; border: none; border-radius: 8px; cursor: pointer; transition: background .15s; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+      .send-btn:hover { background: var(--blue-dark); }
+      .send-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+      /* EMPTY / LOADING */
+      .empty-thread { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--gray-400); font-size: 13px; gap: 10px; }
+      .empty-thread svg { color: var(--gray-300); }
+      .empty-state { padding: 32px; text-align: center; color: var(--gray-400); font-size: 13px; }
+
+      /* COMPOSE MODAL */
+      .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 300; align-items: center; justify-content: center; }
+      .modal-overlay.show { display: flex; }
+      .modal { background: var(--white); border-radius: var(--radius); padding: 24px; width: 100%; max-width: 480px; box-shadow: var(--shadow-md); }
+      .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+      .form-group { margin-bottom: 14px; }
+      .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 5px; }
+      .form-input, .form-textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 13px; font-family: inherit; outline: none; color: var(--gray-800); transition: border-color .15s; }
+      .form-input:focus, .form-textarea:focus { border-color: var(--blue); }
+      .form-textarea { resize: vertical; min-height: 100px; }
+      .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+      .btn-cancel { padding: 8px 16px; background: var(--white); color: var(--gray-600); border: 1px solid var(--gray-200); border-radius: 7px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background .15s; }
+      .btn-cancel:hover { background: var(--gray-100); }
+      .btn-send { padding: 8px 16px; background: var(--blue); color: var(--white); border: none; border-radius: 7px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background .15s; }
+      .btn-send:hover { background: var(--blue-dark); }
+      .success-msg { background: var(--green-bg); color: var(--green); font-size: 13px; padding: 10px 14px; border-radius: 7px; margin-bottom: 14px; display: none; }
+      .error-msg   { background: var(--red-bg); color: var(--red); font-size: 13px; padding: 10px 14px; border-radius: 7px; margin-bottom: 14px; display: none; }
+
+      /* OVERLAY */
+      .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 90; }
+      .overlay.show { display: block; }
+
+      @media (max-width: 960px) { .msg-layout { grid-template-columns: 1fr; height: auto; } .thread-panel { min-height: 400px; } }
+      @media (max-width: 768px) {
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,.12); }
+        .main { margin-left: 0; }
+        .hamburger { display: flex; }
+        .content { padding: 16px; }
+        .back-btn { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- COMPOSE MODAL -->
+  <div class="modal-overlay" id="composeModal">
+    <div class="modal">
+      <div class="modal-title">New Message</div>
+      <div class="success-msg" id="composeSuccess">Message sent successfully!</div>
+      <div class="error-msg"   id="composeError"></div>
+      <div class="form-group">
+        <label class="form-label">To (User ID)</label>
+        <input class="form-input" id="recipientId" type="number" placeholder="Enter recipient user ID" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subject</label>
+        <input class="form-input" id="msgSubject" type="text" placeholder="Enter subject" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea class="form-textarea" id="msgBody" placeholder="Write your message..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeCompose()">Cancel</button>
+        <button class="btn-send" id="sendBtn" onclick="sendMessage()">Send Message</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-profile">
+        <div class="profile-pic">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="profile-name" id="profileName">—</div>
+        <div class="profile-role">Personal Tutor</div>
+        <button class="btn-profile">View Profile</button>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-link" href="tutor-dashboard.html">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </a>
+        <a class="nav-link" href="my-tutees.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>My Tutees</a>
+        <a class="nav-link active">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Messages
+        </a>
+        <a class="nav-link" href="meetings.html">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Meetings
+        </a>
+        <a class="nav-link" href="documents.html">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+          Documents
+        </a>
+        <a class="nav-link" href="blog.html">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Blog
+        </a>
+        <a class="nav-link" href="profile.html">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          Profile &amp; Settings
+        </a>
+      </nav>
+      <div class="sidebar-footer">© 2026 eTutor</div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+      <header class="topbar">
+        <div class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></div>
+        <a class="back-btn" href="tutor-dashboard.html">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg>
+          Back
+        </a>
+        <div class="topbar-right">
+          <div class="icon-btn">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="notif-dot"></span>
+          </div>
+          <div class="topbar-av" id="topbarAv">—</div>
+          <button id="signOutBtn" onclick="logoutUser()" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:7px;font-size:12px;font-weight:600;font-family:inherit;background:var(--white);color:var(--gray-600);border:1px solid var(--gray-200);cursor:pointer;transition:background .15s,color .15s;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out
+          </button>
+        </div>
+      </header>
+
+      <div class="content">
+        <div class="page-hdr">
+          <div class="page-hdr-left">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span class="page-hdr-title">Messages</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="tabs">
+              <button class="tab-btn active" onclick="switchTab('inbox', this)">Inbox</button>
+              <button class="tab-btn" onclick="switchTab('sent', this)">Sent</button>
+            </div>
+            <button class="compose-btn" onclick="openCompose()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Compose
+            </button>
+          </div>
+        </div>
+
+        <div class="msg-layout">
+          <!-- Message list -->
+          <div class="msg-list-panel">
+            <div class="msg-list-search">
+              <input class="search-input" type="text" placeholder="Search messages..." oninput="filterMessages(this.value)" />
+            </div>
+            <div class="msg-list-body" id="msgListBody">
+              <div class="empty-state">Loading messages...</div>
+            </div>
+          </div>
+
+          <!-- Thread view -->
+          <div class="thread-panel" id="threadPanel">
+            <div class="empty-thread">
+              <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <div>Select a message to read</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:5188';
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    if (!currentUser) window.location.href = '../login.html';
+
+    function authHeaders() {
+      return { 'Content-Type': 'application/json', 'Authorization': JSON.stringify(currentUser) };
+    }
+
+    function initials(name) {
+      if (!name) return '?';
+      return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    }
+
+    function timeAgo(dateStr) {
+      const diff = Math.floor((Date.now() - new Date(dateStr)) / 60000);
+      if (diff < 1) return 'Just now';
+      if (diff < 60) return `${diff}m ago`;
+      if (diff < 1440) return `${Math.floor(diff / 60)}h ago`;
+      return `${Math.floor(diff / 1440)}d ago`;
+    }
+
+    // Set profile name
+    const username = currentUser.username || 'Student';
+    document.getElementById('profileName').textContent = username;
+    document.getElementById('topbarAv').textContent = username.substring(0, 2).toUpperCase();
+
+    let allMessages = [];
+    let currentTab = 'inbox';
+    let selectedMsg = null;
+
+    async function loadMessages() {
+      try {
+        const res = await fetch(`${API_BASE}/User/messages/${currentUser.id}`, { headers: authHeaders() });
+        if (res.ok) {
+          allMessages = await res.json();
+          renderList();
+        } else {
+          document.getElementById('msgListBody').innerHTML = '<div class="empty-state">Could not load messages</div>';
+        }
+      } catch (e) {
+        document.getElementById('msgListBody').innerHTML = '<div class="empty-state">Could not reach the server</div>';
+      }
+    }
+
+    function renderList(filter = '') {
+      const isInbox = currentTab === 'inbox';
+      let msgs = allMessages.filter(m => isInbox ? m.recipientId === currentUser.id : m.senderId === currentUser.id);
+      if (filter) {
+        const q = filter.toLowerCase();
+        msgs = msgs.filter(m => (m.subject || '').toLowerCase().includes(q) || (m.body || '').toLowerCase().includes(q));
+      }
+
+      const body = document.getElementById('msgListBody');
+      if (msgs.length === 0) {
+        body.innerHTML = `<div class="empty-state">No ${currentTab} messages</div>`;
+        return;
+      }
+
+      body.innerHTML = msgs.map(m => {
+        const isUnread = !m.isRead && m.recipientId === currentUser.id;
+        const otherParty = currentTab === 'inbox' ? `User #${m.senderId}` : `To: User #${m.recipientId}`;
+        return `
+          <div class="msg-item ${isUnread ? 'unread' : ''} ${selectedMsg?.id === m.id ? 'active' : ''}"
+               onclick="openThread(${m.id})">
+            <div class="msg-av" style="background:${m.senderId === currentUser.id ? 'var(--gray-400)' : 'var(--blue)'}">
+              ${m.senderId === currentUser.id ? 'ME' : `U${m.senderId}`}
+            </div>
+            <div class="msg-item-body">
+              <div class="msg-item-top">
+                <span class="msg-item-from">${otherParty}</span>
+                <span class="msg-item-time">${timeAgo(m.createdAt)}</span>
+              </div>
+              <div class="msg-item-subject">${m.subject || '(No subject)'}</div>
+              <div class="msg-item-preview">${m.body || ''}</div>
+            </div>
+            ${isUnread ? '<div class="unread-dot"></div>' : ''}
+          </div>`;
+      }).join('');
+    }
+
+    function openThread(msgId) {
+      selectedMsg = allMessages.find(m => m.id === msgId);
+      if (!selectedMsg) return;
+      renderList(document.querySelector('.search-input').value);
+
+      const isFromMe = selectedMsg.senderId === currentUser.id;
+      const panel = document.getElementById('threadPanel');
+      panel.innerHTML = `
+        <div class="thread-hdr">
+          <div class="thread-subject">${selectedMsg.subject || '(No subject)'}</div>
+          <div class="thread-meta">
+            ${isFromMe ? `To: User #${selectedMsg.recipientId}` : `From: User #${selectedMsg.senderId}`}
+            &nbsp;·&nbsp; ${new Date(selectedMsg.createdAt).toLocaleString('en-GB')}
+          </div>
+        </div>
+        <div class="thread-body">
+          <div class="bubble-wrap ${isFromMe ? 'me' : ''}">
+            <div class="bubble-av ${isFromMe ? 'me-av' : ''}">${isFromMe ? 'ME' : `U${selectedMsg.senderId}`}</div>
+            <div>
+              <div class="bubble ${isFromMe ? 'me' : 'them'}">${selectedMsg.body}</div>
+              <div class="bubble-time">${timeAgo(selectedMsg.createdAt)}</div>
+            </div>
+          </div>
+        </div>
+        <div class="compose-area">
+          <textarea class="compose-input" id="replyBody" placeholder="Write a reply..." rows="1"></textarea>
+          <button class="send-btn" onclick="sendReply(${selectedMsg.senderId === currentUser.id ? selectedMsg.recipientId : selectedMsg.senderId}, '${(selectedMsg.subject || '').replace(/'/g, "\\'")}')">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
+            Reply
+          </button>
+        </div>`;
+    }
+
+    async function sendReply(recipientId, subject) {
+      const body = document.getElementById('replyBody').value.trim();
+      if (!body) return;
+      const btn = document.querySelector('.send-btn');
+      btn.disabled = true;
+      try {
+        const res = await fetch(`${API_BASE}/Messsage/send`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ senderId: currentUser.id, recipientId, subject: `Re: ${subject}`, body })
+        });
+        if (res.ok) {
+          document.getElementById('replyBody').value = '';
+          await loadMessages();
+        }
+      } catch(e) { console.error(e); }
+      btn.disabled = false;
+    }
+
+    function switchTab(tab, el) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      selectedMsg = null;
+      document.getElementById('threadPanel').innerHTML = `
+        <div class="empty-thread">
+          <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <div>Select a message to read</div>
+        </div>`;
+      renderList();
+    }
+
+    function filterMessages(val) { renderList(val); }
+
+    function openCompose() {
+      document.getElementById('composeModal').classList.add('show');
+      document.getElementById('composeSuccess').style.display = 'none';
+      document.getElementById('composeError').style.display = 'none';
+      document.getElementById('recipientId').value = '';
+      document.getElementById('msgSubject').value = '';
+      document.getElementById('msgBody').value = '';
+    }
+
+    function closeCompose() { document.getElementById('composeModal').classList.remove('show'); }
+
+    async function sendMessage() {
+      const recipientId = parseInt(document.getElementById('recipientId').value);
+      const subject = document.getElementById('msgSubject').value.trim();
+      const body = document.getElementById('msgBody').value.trim();
+      const errEl = document.getElementById('composeError');
+      const sucEl = document.getElementById('composeSuccess');
+
+      if (!recipientId || !body) {
+        errEl.textContent = 'Please fill in recipient ID and message body.';
+        errEl.style.display = 'block'; return;
+      }
+
+      document.getElementById('sendBtn').disabled = true;
+      errEl.style.display = 'none';
+
+      try {
+        const res = await fetch(`${API_BASE}/Messsage/send`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ senderId: currentUser.id, recipientId, subject, body })
+        });
+        if (res.ok) {
+          sucEl.style.display = 'block';
+          await loadMessages();
+          setTimeout(closeCompose, 1500);
+        } else {
+          errEl.textContent = 'Failed to send message. Please try again.';
+          errEl.style.display = 'block';
+        }
+      } catch(e) {
+        errEl.textContent = 'Could not reach the server.';
+        errEl.style.display = 'block';
+      }
+      document.getElementById('sendBtn').disabled = false;
+    }
+
+    async function logoutUser() {
+      try { await fetch(`${API_BASE}/Authentication/logout/${currentUser.id}`, { method: 'POST', headers: authHeaders() }); } catch(e) {}
+      localStorage.removeItem('currentUser'); localStorage.removeItem('registeredRoleId'); localStorage.removeItem('registeredUsername');
+      window.location.href = '../login.html';
+    }
+
+    function openSidebar()  { document.getElementById('sidebar').classList.add('open');    document.getElementById('overlay').classList.add('show'); }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+
+    // Sign out hover
+    const sob = document.getElementById('signOutBtn');
+    sob.addEventListener('mouseover', () => { sob.style.background='#fee2e2'; sob.style.color='#dc2626'; sob.style.borderColor='#fecaca'; });
+    sob.addEventListener('mouseout',  () => { sob.style.background='var(--white)'; sob.style.color='var(--gray-600)'; sob.style.borderColor='var(--gray-200)'; });
+
+    loadMessages();
+  </script>
+  </body>
+</html>

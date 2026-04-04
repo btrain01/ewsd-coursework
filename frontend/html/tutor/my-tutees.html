@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eTutor — My Tutees</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      :root {
+        --blue: #1a56db; --blue-dark: #1a3a6b; --blue-bg: #e8f0fe;
+        --white: #ffffff; --gray-50: #f8fafc; --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0; --gray-300: #d1d5db; --gray-400: #94a3b8;
+        --gray-500: #6b7280; --gray-700: #374151; --gray-800: #1f2937;
+        --green: #16a34a; --green-bg: #dcfce7; --amber: #d97706;
+        --amber-bg: #fef3c7; --red: #dc2626; --red-bg: #fee2e2;
+        --sidebar-w: 240px; --header-h: 60px; --radius: 12px;
+        --shadow: 0 1px 4px rgba(0,0,0,.07); --shadow-md: 0 4px 16px rgba(0,0,0,.10);
+      }
+      body { font-family: "Segoe UI", system-ui, sans-serif; background: var(--gray-100); color: var(--gray-800); min-height: 100vh; }
+      .layout { display: flex; min-height: 100vh; }
+
+      /* SIDEBAR */
+      .sidebar { width: var(--sidebar-w); background: var(--white); border-right: 1px solid var(--gray-200); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; transition: transform .25s ease; overflow-y: auto; }
+      .sidebar-profile { padding: 24px 20px 20px; display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid var(--gray-200); }
+      .profile-pic { width: 72px; height: 72px; border-radius: 50%; background: var(--blue-bg); border: 3px solid var(--blue); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+      .profile-pic svg { color: var(--blue); }
+      .profile-name { font-size: 14px; font-weight: 700; }
+      .profile-role { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+      .btn-profile { margin-top: 12px; padding: 6px 20px; background: var(--blue); color: var(--white); font-size: 12px; font-weight: 600; font-family: inherit; border: none; border-radius: 6px; cursor: pointer; transition: background .15s; }
+      .btn-profile:hover { background: var(--blue-dark); }
+      .sidebar-nav { flex: 1; padding: 12px 0; }
+      .nav-link { display: flex; align-items: center; gap: 10px; padding: 9px 20px; font-size: 13.5px; color: var(--gray-700); text-decoration: none; cursor: pointer; border-left: 3px solid transparent; transition: background .15s, color .15s; user-select: none; }
+      .nav-link:hover { background: var(--blue-bg); color: var(--blue); }
+      .nav-link.active { background: var(--blue-bg); color: var(--blue); font-weight: 600; border-left-color: var(--blue); }
+      .nav-link svg { opacity: .6; flex-shrink: 0; }
+      .nav-link:hover svg, .nav-link.active svg { opacity: 1; }
+      .sidebar-footer { padding: 12px 20px; border-top: 1px solid var(--gray-200); font-size: 11px; color: var(--gray-400); }
+
+      /* TOPBAR */
+      .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+      .topbar { height: var(--header-h); background: var(--white); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; padding: 0 24px; gap: 12px; position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow); }
+      .hamburger { display: none; flex-direction: column; gap: 4px; cursor: pointer; padding: 4px; }
+      .hamburger span { display: block; width: 20px; height: 2px; background: var(--gray-700); border-radius: 2px; }
+      .back-btn { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: var(--gray-700); background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 7px; padding: 5px 12px; cursor: pointer; text-decoration: none; transition: background .15s; }
+      .back-btn:hover { background: var(--gray-200); }
+      .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+      .icon-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--gray-200); background: var(--white); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; color: var(--gray-600); transition: background .15s; }
+      .icon-btn:hover { background: var(--gray-100); }
+      .notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--red); border: 2px solid var(--white); }
+      .topbar-av { width: 34px; height: 34px; border-radius: 50%; background: var(--blue); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; cursor: pointer; }
+
+      /* CONTENT */
+      .content { padding: 24px; flex: 1; }
+      .page-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+      .page-hdr-left { display: flex; align-items: center; gap: 10px; }
+      .page-hdr-left svg { color: var(--blue); }
+      .page-hdr-title { font-size: 17px; font-weight: 700; }
+
+      /* SUMMARY PILLS */
+      .summary-pills { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+      .s-pill { display: flex; align-items: center; gap: 7px; padding: 8px 16px; background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); box-shadow: var(--shadow); font-size: 13px; }
+      .s-pill-count { font-size: 18px; font-weight: 800; }
+      .s-pill-label { color: var(--gray-500); }
+      .s-pill.blue  .s-pill-count { color: var(--blue); }
+      .s-pill.red   .s-pill-count { color: var(--red); }
+      .s-pill.amber .s-pill-count { color: var(--amber); }
+      .s-pill.green .s-pill-count { color: var(--green); }
+
+      /* ALERT */
+      .alert-banner { background: var(--red-bg); border: 1px solid #fecaca; border-radius: var(--radius); padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--red); }
+      .alert-banner svg { flex-shrink: 0; margin-top: 1px; }
+
+      /* TABLE PANEL */
+      .panel { background: var(--white); border-radius: var(--radius); border: 1px solid var(--gray-200); box-shadow: var(--shadow); overflow: hidden; }
+      .panel-toolbar { padding: 12px 16px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      .search-input { flex: 1; min-width: 180px; padding: 8px 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 13px; font-family: inherit; outline: none; color: var(--gray-800); background: var(--gray-50); }
+      .search-input:focus { border-color: var(--blue); background: var(--white); }
+      .filter-select { padding: 8px 10px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 13px; font-family: inherit; outline: none; color: var(--gray-700); background: var(--white); cursor: pointer; }
+      .sort-select { padding: 8px 10px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 13px; font-family: inherit; outline: none; color: var(--gray-700); background: var(--white); cursor: pointer; }
+      .notice-bar { background: var(--amber-bg); border-bottom: 1px solid #fde68a; color: var(--amber); font-size: 12px; padding: 8px 16px; }
+
+      /* TABLE */
+      .tutee-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+      .tutee-table th { text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-400); padding: 10px 16px; border-bottom: 1px solid var(--gray-200); white-space: nowrap; cursor: pointer; user-select: none; }
+      .tutee-table th:hover { color: var(--blue); }
+      .tutee-table td { padding: 13px 16px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+      .tutee-table tbody tr:last-child td { border-bottom: none; }
+      .tutee-table tbody tr:hover td { background: var(--gray-50); }
+
+      .tutee-cell { display: flex; align-items: center; gap: 12px; }
+      .tutee-av { width: 36px; height: 36px; border-radius: 50%; background: var(--blue); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
+      .tutee-name { font-weight: 600; color: var(--gray-800); margin-bottom: 2px; }
+      .tutee-email { font-size: 11px; color: var(--gray-400); }
+
+      .pill { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+      .pill-active   { background: var(--green-bg); color: var(--green); }
+      .pill-atrisk   { background: var(--red-bg);   color: var(--red); }
+      .pill-inactive { background: var(--amber-bg); color: var(--amber); }
+
+      .action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+      .btn-xs { display: flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background .15s; white-space: nowrap; }
+      .btn-msg  { background: var(--blue-bg); color: var(--blue); border: none; }
+      .btn-msg:hover  { background: var(--blue); color: var(--white); }
+      .btn-meet { background: var(--white); color: var(--gray-600); border: 1px solid var(--gray-200); }
+      .btn-meet:hover { background: var(--gray-100); }
+      .btn-view { background: var(--white); color: var(--blue); border: 1px solid var(--blue-bg); }
+      .btn-view:hover { background: var(--blue-bg); }
+
+      /* TUTEE DETAIL DRAWER */
+      .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 200; }
+      .drawer-overlay.show { display: block; }
+      .drawer { position: fixed; top: 0; right: -420px; width: 420px; max-width: 95vw; height: 100vh; background: var(--white); box-shadow: -4px 0 24px rgba(0,0,0,.12); z-index: 201; transition: right .3s ease; display: flex; flex-direction: column; }
+      .drawer.open { right: 0; }
+      .drawer-hdr { padding: 18px 20px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; }
+      .drawer-title { font-size: 15px; font-weight: 700; }
+      .drawer-close { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--gray-200); background: var(--white); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--gray-600); font-size: 18px; }
+      .drawer-close:hover { background: var(--gray-100); }
+      .drawer-body { flex: 1; overflow-y: auto; padding: 20px; }
+      .drawer-av { width: 64px; height: 64px; border-radius: 50%; background: var(--blue); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; margin: 0 auto 12px; }
+      .drawer-name  { text-align: center; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+      .drawer-email { text-align: center; font-size: 13px; color: var(--blue); margin-bottom: 16px; }
+      .drawer-section { margin-bottom: 20px; }
+      .drawer-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-400); margin-bottom: 10px; }
+      .drawer-field { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
+      .drawer-field:last-child { border-bottom: none; }
+      .drawer-field-label { color: var(--gray-500); }
+      .drawer-field-value { font-weight: 600; text-align: right; }
+      .drawer-actions { display: flex; gap: 8px; padding: 16px 20px; border-top: 1px solid var(--gray-200); }
+      .drawer-btn-primary { flex: 1; padding: 10px; background: var(--blue); color: var(--white); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background .15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+      .drawer-btn-primary:hover { background: var(--blue-dark); }
+      .drawer-btn-outline { flex: 1; padding: 10px; background: var(--white); color: var(--blue); border: 1.5px solid var(--blue-bg); border-radius: 8px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background .15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+      .drawer-btn-outline:hover { background: var(--blue-bg); }
+
+      .empty-state { padding: 48px 24px; text-align: center; color: var(--gray-400); font-size: 13px; }
+      .empty-state svg { color: var(--gray-300); margin-bottom: 10px; }
+
+      .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 90; }
+      .overlay.show { display: block; }
+
+      @media (max-width: 768px) {
+        .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,.12); }
+        .main { margin-left: 0; } .hamburger { display: flex; } .content { padding: 16px; } .back-btn { display: none; }
+        .tutee-table { display: block; overflow-x: auto; }
+        .drawer { width: 100%; max-width: 100vw; }
+      }
+    </style>
+  </head>
+  <body>
+
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- TUTEE DETAIL DRAWER -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <div class="drawer" id="tuteeDrawer">
+    <div class="drawer-hdr">
+      <span class="drawer-title">Tutee Details</span>
+      <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-body" id="drawerBody">
+      <div class="empty-state">Select a tutee to view details</div>
+    </div>
+    <div class="drawer-actions" id="drawerActions" style="display:none">
+      <button class="drawer-btn-primary" id="drawerMsgBtn">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Send Message
+      </button>
+      <button class="drawer-btn-outline" onclick="window.location.href='meetings.html'">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Schedule Meeting
+      </button>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-profile">
+        <div class="profile-pic"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+        <div class="profile-name" id="profileName">—</div>
+        <div class="profile-role">Personal Tutor</div>
+        <button class="btn-profile">View Profile</button>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-link" href="tutor-dashboard.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+        <a class="nav-link active"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>My Tutees</a>
+        <a class="nav-link" href="messages.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+        <a class="nav-link" href="meetings.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Meetings</a>
+        <a class="nav-link" href="documents.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>Documents</a>
+        <a class="nav-link" href="blog.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Blog</a>
+        <a class="nav-link" href="profile.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>Profile &amp; Settings</a>
+      </nav>
+      <div class="sidebar-footer">© 2026 eTutor</div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+      <header class="topbar">
+        <div class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></div>
+        <a class="back-btn" href="../tutor-dashboard.html">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg>
+          Back
+        </a>
+        <div class="topbar-right">
+          <div class="icon-btn">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="notif-dot"></span>
+          </div>
+          <div class="topbar-av" id="topbarAv">—</div>
+          <button id="signOutBtn" onclick="logoutUser()" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:7px;font-size:12px;font-weight:600;font-family:inherit;background:var(--white);color:var(--gray-600);border:1px solid var(--gray-200);cursor:pointer;transition:background .15s,color .15s;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out
+          </button>
+        </div>
+      </header>
+
+      <div class="content">
+        <div class="page-hdr">
+          <div class="page-hdr-left">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span class="page-hdr-title">My Tutees</span>
+          </div>
+        </div>
+
+        <!-- Summary pills -->
+        <div class="summary-pills">
+          <div class="s-pill blue">
+            <span class="s-pill-count" id="countTotal">—</span>
+            <span class="s-pill-label">Total</span>
+          </div>
+          <div class="s-pill green">
+            <span class="s-pill-count" id="countActive">—</span>
+            <span class="s-pill-label">Active</span>
+          </div>
+          <div class="s-pill amber">
+            <span class="s-pill-count" id="countInactive">—</span>
+            <span class="s-pill-label">Inactive</span>
+          </div>
+          <div class="s-pill red">
+            <span class="s-pill-count" id="countAtRisk">—</span>
+            <span class="s-pill-label">At Risk</span>
+          </div>
+        </div>
+
+        <!-- At-risk alert -->
+        <div class="alert-banner" id="alertBanner" style="display:none">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div>
+            <strong>Students needing attention:</strong>
+            <div id="alertList" style="margin-top:4px;font-size:12px"></div>
+          </div>
+        </div>
+
+        <!-- Tutee table -->
+        <div class="panel">
+          <div class="panel-toolbar">
+            <input class="search-input" type="text" placeholder="Search by name or email..." oninput="applyFilters()" id="searchInput" />
+            <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+              <option value="all">All statuses</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="atrisk">At Risk</option>
+            </select>
+            <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+              <option value="name-asc">Name A–Z</option>
+              <option value="name-desc">Name Z–A</option>
+              <option value="date-asc">Oldest allocation</option>
+              <option value="date-desc">Newest allocation</option>
+            </select>
+          </div>
+          <div class="notice-bar" id="noticeBar" style="display:none">
+            ⚠️ Backend note: <code>GetStudentsByTutorId</code> should return a list. Ask developer to change <code>FirstOrDefaultAsync()</code> to <code>ToListAsync()</code>.
+          </div>
+          <div style="overflow-x:auto">
+            <table class="tutee-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Email</th>
+                  <th>Allocated</th>
+                  <th>Notes</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tuteeBody">
+                <tr><td colspan="6"><div class="empty-state">Loading tutees...</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:5188';
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    if (!currentUser) window.location.href = '../login.html';
+
+    function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': JSON.stringify(currentUser) }; }
+
+    function initials(name) {
+      if (!name) return '?';
+      return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    }
+
+    function formatDate(str) {
+      const parts = str.split(' ');
+      const dp = (parts[1] || parts[0]).split('/');
+      if (dp.length === 3) {
+        return new Date(`${dp[2]}-${dp[1]}-${dp[0]}`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      }
+      return new Date(str).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function parseDateFromStr(str) {
+      const parts = str.split(' ');
+      const dp = (parts[1] || parts[0]).split('/');
+      if (dp.length === 3) return new Date(`${dp[2]}-${dp[1]}-${dp[0]}`);
+      return new Date(str);
+    }
+
+    function getStatus(t) {
+      if (!t.allocatedAt) return 'active';
+      const d = parseDateFromStr(t.allocatedAt);
+      const days = (Date.now() - d.getTime()) / 86400000;
+      if (days > 28) return 'atrisk';
+      if (days > 7)  return 'inactive';
+      return 'active';
+    }
+
+    function getDaysSince(t) {
+      if (!t.allocatedAt) return 0;
+      return Math.floor((Date.now() - parseDateFromStr(t.allocatedAt).getTime()) / 86400000);
+    }
+
+    const statusMeta = {
+      active:   { cls: 'pill-active',   label: 'Active'   },
+      inactive: { cls: 'pill-inactive', label: 'Inactive' },
+      atrisk:   { cls: 'pill-atrisk',   label: 'At Risk'  },
+    };
+
+    // ── DATA ──────────────────────────────────────────────────────
+    let allTutees = [];
+
+    async function loadTutees() {
+      const name = currentUser.username || 'Tutor';
+      document.getElementById('profileName').textContent = name;
+      document.getElementById('topbarAv').textContent = name.substring(0, 2).toUpperCase();
+
+      // Load profile for full name
+      try {
+        const pRes = await fetch(`${API_BASE}/User/dashboard/${currentUser.id}`, { headers: authHeaders() });
+        if (pRes.ok) {
+          const p = await pRes.json();
+          const dn = p.fullName || p.username || name;
+          document.getElementById('profileName').textContent = dn;
+          document.getElementById('topbarAv').textContent = initials(dn);
+        }
+      } catch(e) {}
+
+      try {
+        const res = await fetch(`${API_BASE}/User/assignment/tutor/${currentUser.id}`, { headers: authHeaders() });
+
+        if (res.ok) {
+          const data = await res.json();
+          allTutees = Array.isArray(data) ? data : (data ? [data] : []);
+
+          if (!Array.isArray(data)) {
+            document.getElementById('noticeBar').style.display = 'block';
+          }
+
+          updateSummary();
+          updateAlertBanner();
+          applyFilters();
+
+        } else if (res.status === 404) {
+          allTutees = [];
+          updateSummary();
+          document.getElementById('tuteeBody').innerHTML = `
+            <tr><td colspan="6">
+              <div class="empty-state">
+                <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <div>No tutees assigned yet</div>
+              </div>
+            </td></tr>`;
+        } else {
+          document.getElementById('tuteeBody').innerHTML = '<tr><td colspan="6"><div class="empty-state">Could not load tutees</div></td></tr>';
+        }
+      } catch(e) {
+        document.getElementById('tuteeBody').innerHTML = '<tr><td colspan="6"><div class="empty-state">Could not reach the server</div></td></tr>';
+        console.error(e);
+      }
+    }
+
+    function updateSummary() {
+      const active   = allTutees.filter(t => getStatus(t) === 'active').length;
+      const inactive = allTutees.filter(t => getStatus(t) === 'inactive').length;
+      const atrisk   = allTutees.filter(t => getStatus(t) === 'atrisk').length;
+      document.getElementById('countTotal').textContent    = allTutees.length;
+      document.getElementById('countActive').textContent   = active;
+      document.getElementById('countInactive').textContent = inactive;
+      document.getElementById('countAtRisk').textContent   = atrisk;
+    }
+
+    function updateAlertBanner() {
+      const flagged = allTutees.filter(t => getStatus(t) !== 'active');
+      if (flagged.length === 0) return;
+      document.getElementById('alertBanner').style.display = 'flex';
+      document.getElementById('alertList').innerHTML = flagged.map(t => {
+        const days = getDaysSince(t);
+        const s = getStatus(t);
+        return `<span style="margin-right:12px">• ${t.name} <span style="opacity:.8">(${s === 'atrisk' ? `${days} days ago` : `${days} days`})</span></span>`;
+      }).join('');
+    }
+
+    function applyFilters() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const status = document.getElementById('statusFilter').value;
+      const sort   = document.getElementById('sortSelect').value;
+
+      let tutees = [...allTutees];
+
+      if (search) tutees = tutees.filter(t => (t.name || '').toLowerCase().includes(search) || (t.email || '').toLowerCase().includes(search));
+      if (status !== 'all') tutees = tutees.filter(t => getStatus(t) === status);
+
+      tutees.sort((a, b) => {
+        if (sort === 'name-asc')  return (a.name || '').localeCompare(b.name || '');
+        if (sort === 'name-desc') return (b.name || '').localeCompare(a.name || '');
+        const da = parseDateFromStr(a.allocatedAt || '1970-01-01');
+        const db = parseDateFromStr(b.allocatedAt || '1970-01-01');
+        if (sort === 'date-asc')  return da - db;
+        if (sort === 'date-desc') return db - da;
+        return 0;
+      });
+
+      renderTable(tutees);
+    }
+
+    function renderTable(tutees) {
+      const tbody = document.getElementById('tuteeBody');
+      if (tutees.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">No tutees match your search</div></td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = tutees.map(t => {
+        const s    = getStatus(t);
+        const meta = statusMeta[s];
+        const days = getDaysSince(t);
+        return `
+          <tr>
+            <td>
+              <div class="tutee-cell">
+                <div class="tutee-av">${initials(t.name)}</div>
+                <div>
+                  <div class="tutee-name">${t.name || '—'}</div>
+                  <div class="tutee-email">ID: ${t.id}</div>
+                </div>
+              </div>
+            </td>
+            <td style="font-size:13px;color:var(--gray-600)">${t.email || '—'}</td>
+            <td style="font-size:13px;color:var(--gray-600)">
+              ${t.allocatedAt ? formatDate(t.allocatedAt) : '—'}
+              <div style="font-size:11px;color:var(--gray-400);margin-top:2px">${days} days ago</div>
+            </td>
+            <td style="font-size:12px;color:var(--gray-500);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.notes || '—'}</td>
+            <td><span class="pill ${meta.cls}">${meta.label}</span></td>
+            <td>
+              <div class="action-btns">
+                <button class="btn-xs btn-msg" onclick="messageStudent(${t.id})">
+                  <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  Message
+                </button>
+                <button class="btn-xs btn-meet" onclick="window.location.href='meetings.html'">
+                  <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  Meeting
+                </button>
+                <button class="btn-xs btn-view" onclick='openDrawer(${JSON.stringify(t).replace(/'/g, "&#39;")})'>
+                  View
+                </button>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    // ── DRAWER ────────────────────────────────────────────────────
+    let drawerTutee = null;
+
+    function openDrawer(tutee) {
+      drawerTutee = tutee;
+      const s    = getStatus(tutee);
+      const meta = statusMeta[s];
+      const days = getDaysSince(tutee);
+
+      document.getElementById('drawerBody').innerHTML = `
+        <div class="drawer-av">${initials(tutee.name)}</div>
+        <div class="drawer-name">${tutee.name || '—'}</div>
+        <div class="drawer-email">${tutee.email || ''}</div>
+
+        <div class="drawer-section">
+          <div class="drawer-section-title">Details</div>
+          <div class="drawer-field">
+            <span class="drawer-field-label">User ID</span>
+            <span class="drawer-field-value">#${tutee.id}</span>
+          </div>
+          <div class="drawer-field">
+            <span class="drawer-field-label">Status</span>
+            <span class="drawer-field-value"><span class="pill ${meta.cls}">${meta.label}</span></span>
+          </div>
+          <div class="drawer-field">
+            <span class="drawer-field-label">Allocated</span>
+            <span class="drawer-field-value">${tutee.allocatedAt ? formatDate(tutee.allocatedAt) : '—'}</span>
+          </div>
+          <div class="drawer-field">
+            <span class="drawer-field-label">Days since allocation</span>
+            <span class="drawer-field-value">${days} days</span>
+          </div>
+        </div>
+
+        <div class="drawer-section">
+          <div class="drawer-section-title">Notes</div>
+          <div style="font-size:13px;color:var(--gray-600);line-height:1.6;padding:10px;background:var(--gray-50);border-radius:8px">
+            ${tutee.notes || 'No notes recorded for this tutee.'}
+          </div>
+        </div>`;
+
+      document.getElementById('drawerMsgBtn').onclick = () => messageStudent(tutee.id);
+      document.getElementById('drawerActions').style.display = 'flex';
+      document.getElementById('tuteeDrawer').classList.add('open');
+      document.getElementById('drawerOverlay').classList.add('show');
+    }
+
+    function closeDrawer() {
+      document.getElementById('tuteeDrawer').classList.remove('open');
+      document.getElementById('drawerOverlay').classList.remove('show');
+    }
+
+    function messageStudent(studentId) {
+      localStorage.setItem('composeRecipient', studentId);
+      window.location.href = 'messages.html';
+    }
+
+    // ── AUTH / SIDEBAR ────────────────────────────────────────────
+    async function logoutUser() {
+      try { await fetch(`${API_BASE}/Authentication/logout/${currentUser.id}`, { method: 'POST', headers: authHeaders() }); } catch(e) {}
+      localStorage.clear(); window.location.href = '../login.html';
+    }
+
+    function openSidebar()  { document.getElementById('sidebar').classList.add('open');    document.getElementById('overlay').classList.add('show'); }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+
+    const sob = document.getElementById('signOutBtn');
+    sob.addEventListener('mouseover', () => { sob.style.background='#fee2e2'; sob.style.color='#dc2626'; sob.style.borderColor='#fecaca'; });
+    sob.addEventListener('mouseout',  () => { sob.style.background='var(--white)'; sob.style.color='var(--gray-600)'; sob.style.borderColor='var(--gray-200)'; });
+
+    loadTutees();
+  </script>
+  </body>
+</html>

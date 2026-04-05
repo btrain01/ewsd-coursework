@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>eTutor — Reports</title>
+  <style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--blue:#1a56db;--blue-dark:#1a3a6b;--blue-bg:#e8f0fe;--white:#ffffff;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-300:#d1d5db;--gray-400:#94a3b8;--gray-500:#6b7280;--gray-700:#374151;--gray-800:#1f2937;--green:#16a34a;--green-bg:#dcfce7;--amber:#d97706;--amber-bg:#fef3c7;--red:#dc2626;--red-bg:#fee2e2;--sidebar-w:240px;--header-h:60px;--radius:12px;--shadow:0 1px 4px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.10)}body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--gray-100);color:var(--gray-800);min-height:100vh}.layout{display:flex;min-height:100vh}.sidebar{width:var(--sidebar-w);background:var(--white);border-right:1px solid var(--gray-200);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .25s ease;overflow-y:auto}.sidebar-profile{padding:24px 20px 20px;display:flex;flex-direction:column;align-items:center;border-bottom:1px solid var(--gray-200)}.profile-pic{width:72px;height:72px;border-radius:50%;background:var(--blue-bg);border:3px solid var(--blue);display:flex;align-items:center;justify-content:center;margin-bottom:10px}.profile-pic svg{color:var(--blue)}.profile-name{font-size:14px;font-weight:700}.profile-role{font-size:11px;color:var(--gray-500);margin-top:2px}.btn-profile{margin-top:12px;padding:6px 20px;background:var(--blue);color:var(--white);font-size:12px;font-weight:600;font-family:inherit;border:none;border-radius:6px;cursor:pointer}.sidebar-nav{flex:1;padding:10px 0}.nav-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);padding:12px 20px 4px}.nav-link{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13.5px;color:var(--gray-700);text-decoration:none;cursor:pointer;border-left:3px solid transparent;transition:background .15s,color .15s;user-select:none}.nav-link:hover{background:var(--blue-bg);color:var(--blue)}.nav-link.active{background:var(--blue-bg);color:var(--blue);font-weight:600;border-left-color:var(--blue)}.nav-link svg{opacity:.6;flex-shrink:0}.nav-link:hover svg,.nav-link.active svg{opacity:1}.sidebar-footer{padding:12px 20px;border-top:1px solid var(--gray-200);font-size:11px;color:var(--gray-400)}.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}.topbar{height:var(--header-h);background:var(--white);border-bottom:1px solid var(--gray-200);display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:4px}.hamburger span{display:block;width:20px;height:2px;background:var(--gray-700);border-radius:2px}.back-btn{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--gray-700);background:var(--gray-100);border:1px solid var(--gray-200);border-radius:7px;padding:5px 12px;cursor:pointer;text-decoration:none}.back-btn:hover{background:var(--gray-200)}.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}.icon-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--gray-200);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;color:var(--gray-600)}.notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--red);border:2px solid var(--white)}.topbar-av{width:34px;height:34px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}.content{padding:24px;flex:1}.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}.page-hdr-left{display:flex;align-items:center;gap:10px}.page-hdr-left svg{color:var(--blue)}.page-hdr-title{font-size:17px;font-weight:700}.card{background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-200);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}.card-hdr{padding:14px 20px;border-bottom:1px solid var(--gray-100)}.card-title{font-size:14px;font-weight:700;margin-bottom:2px}.card-sub{font-size:12px;color:var(--gray-500)}.card-body{padding:20px}.form-group{margin-bottom:16px}.form-label{display:block;font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:5px}.form-input,.form-select,.form-textarea{width:100%;padding:9px 12px;border:1px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:inherit;outline:none;color:var(--gray-800);transition:border-color .15s;background:var(--white)}.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--blue)}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.btn-primary{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--blue);color:var(--white);font-size:13px;font-weight:600;font-family:inherit;border:none;border-radius:8px;cursor:pointer;transition:background .15s}.btn-primary:hover{background:var(--blue-dark)}.btn-primary:disabled{opacity:.6;cursor:not-allowed}.btn-outline{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--white);color:var(--blue);font-size:13px;font-weight:600;font-family:inherit;border:1.5px solid var(--blue-bg);border-radius:8px;cursor:pointer;transition:background .15s}.btn-outline:hover{background:var(--blue-bg)}.success-msg{background:var(--green-bg);border:1px solid #bbf7d0;color:var(--green);font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:16px;display:none}.error-msg{background:var(--red-bg);border:1px solid #fecaca;color:var(--red);font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:16px;display:none}.notice-bar{background:var(--amber-bg);border:1px solid #fde68a;border-radius:8px;color:var(--amber);font-size:13px;padding:10px 14px;margin-bottom:16px}.pill{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap}.pill-yes{background:var(--green-bg);color:var(--green)}.pill-no{background:var(--red-bg);color:var(--red)}.pill-tutor{background:var(--green-bg);color:var(--green)}.table-wrap{overflow-x:auto}.data-table{width:100%;border-collapse:collapse;font-size:13px}.data-table th{text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);padding:10px 16px;border-bottom:1px solid var(--gray-200);white-space:nowrap}.data-table td{padding:12px 16px;border-bottom:1px solid var(--gray-100);vertical-align:middle}.data-table tbody tr:last-child td{border-bottom:none}.data-table tbody tr:hover td{background:var(--gray-50)}.user-cell{display:flex;align-items:center;gap:10px}.user-av{width:32px;height:32px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0}.user-name{font-weight:600}.user-sub{font-size:11px;color:var(--gray-400);margin-top:1px}.empty-state{padding:40px;text-align:center;color:var(--gray-400);font-size:13px}.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:90}.overlay.show{display:block}@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0);box-shadow:4px 0 20px rgba(0,0,0,.12)}.main{margin-left:0}.hamburger{display:flex}.content{padding:16px}.back-btn{display:none}.form-row{grid-template-columns:1fr}}</style>
+</head>
+<body>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-profile">
+      <div class="profile-pic"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+      <div class="profile-name" id="profileName">—</div>
+      <div class="profile-role">Authorised Staff</div>
+      <button class="btn-profile">View Profile</button>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Overview</div>
+      <a class="nav-link" href="staff-dashboard.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+      <a class="nav-link  active" href="reports.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Reports</a>
+      <div class="nav-section">Dashboards</div>
+      <a class="nav-link" href="all-students.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>All Students</a>
+      <a class="nav-link" href="all-tutors.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>All Tutors</a>
+      <div class="nav-section">Allocation</div>
+      <a class="nav-link" href="allocate.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Allocate Tutor</a>
+      <a class="nav-link" href="reallocate.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Reallocate Tutor</a>
+      <a class="nav-link" href="bulk-allocate.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>Bulk Allocation</a>
+      <div class="nav-section">System</div>
+      <a class="nav-link" href="profile.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>Profile &amp; Settings</a>
+    </nav>
+    <div class="sidebar-footer">© 2026 eTutor</div>
+  </aside>
+  <div class="main">
+  <header class="topbar">
+    <div class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></div>
+    <a class="back-btn" href="staff-dashboard.html"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg>Back</a>
+    <div class="topbar-right">
+      <div class="icon-btn"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-dot"></span></div>
+      <div class="topbar-av" id="topbarAv">—</div>
+      <button id="signOutBtn" onclick="logoutUser()" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:7px;font-size:12px;font-weight:600;font-family:inherit;background:var(--white);color:var(--gray-600);border:1px solid var(--gray-200);cursor:pointer;">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out
+      </button>
+    </div>
+  </header>
+    <div class="content">
+      <div class="page-hdr"><div class="page-hdr-left"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="page-hdr-title">Reports</span></div></div>
+      <div class="notice-bar">⚠️ System-wide reports require additional backend endpoints. These will populate once your partner builds the reporting endpoints.</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+        <div class="card" style="margin:0"><div class="card-body"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-bottom:6px">Messages (7 days)</div><div style="font-size:30px;font-weight:800;color:var(--blue)">—</div><div style="font-size:12px;color:var(--gray-500);margin-top:4px">System-wide total</div></div></div>
+        <div class="card" style="margin:0"><div class="card-body"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-bottom:6px">Avg Messages / Tutor</div><div style="font-size:30px;font-weight:800;color:var(--green)">—</div><div style="font-size:12px;color:var(--gray-500);margin-top:4px">Last 7 days</div></div></div>
+        <div class="card" style="margin:0"><div class="card-body"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-bottom:6px">Meetings (7 days)</div><div style="font-size:30px;font-weight:800;color:var(--amber)">—</div><div style="font-size:12px;color:var(--gray-500);margin-top:4px">System-wide total</div></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="card" style="margin:0"><div class="card-hdr"><div class="card-title">Exception: No Tutor Assigned</div></div><div class="card-body"><div class="empty-state" style="padding:20px">Waiting for <code>GET /reports/students/no-tutor</code></div></div></div>
+        <div class="card" style="margin:0"><div class="card-hdr"><div class="card-title">Exception: 7-Day Inactive</div></div><div class="card-body"><div class="empty-state" style="padding:20px">Waiting for <code>GET /reports/students/inactive?days=7</code></div></div></div>
+        <div class="card" style="margin:0"><div class="card-hdr"><div class="card-title">Exception: 28-Day Inactive</div></div><div class="card-body"><div class="empty-state" style="padding:20px">Waiting for <code>GET /reports/students/inactive?days=28</code></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const API_BASE = 'http://localhost:5188';
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+  if (!currentUser) window.location.href = '../login.html';
+  function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': JSON.stringify(currentUser) }; }
+  function initials(n) { if (!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+  async function loadProfile() {
+    const un = currentUser.username||'Staff';
+    document.getElementById('profileName').textContent=un;
+    document.getElementById('topbarAv').textContent=un.substring(0,2).toUpperCase();
+    try { const r=await fetch(`${API_BASE}/User/dashboard/${currentUser.id}`,{headers:authHeaders()}); if(r.ok){const p=await r.json();const dn=p.fullName||p.username||un;document.getElementById('profileName').textContent=dn;document.getElementById('topbarAv').textContent=initials(dn);} } catch(e){}
+  }
+  async function logoutUser() {
+    try{await fetch(`${API_BASE}/Authentication/logout/${currentUser.id}`,{method:'POST',headers:authHeaders()});}catch(e){}
+    localStorage.clear();window.location.href='../login.html';
+  }
+  function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');}
+  function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
+  const sob=document.getElementById('signOutBtn');
+  sob.addEventListener('mouseover',()=>{sob.style.background='#fee2e2';sob.style.color='#dc2626';sob.style.borderColor='#fecaca';});
+  sob.addEventListener('mouseout',()=>{sob.style.background='var(--white)';sob.style.color='var(--gray-600)';sob.style.borderColor='var(--gray-200)';});
+
+  loadProfile();
+</script>
+</body>
+</html>

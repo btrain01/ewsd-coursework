@@ -31,21 +31,6 @@ namespace backend_app.Services
                 .ToListAsync();
         }
 
-        public async Task<List<BlogPost>> GetStudentBlogPosts(int tutorId, int studentId)
-        {
-            // Verify the tutor is actually assigned to this student
-            var isAssigned = await applicationDBContext.TutorAssignments
-                .AnyAsync(ts => ts.TutorId == tutorId && ts.StudentId == studentId);
-
-            if (!isAssigned)
-                return [];
-
-            return await applicationDBContext.BlogPosts
-                .Where(bp => bp.AuthorId == studentId)
-                .OrderByDescending(bp => bp.CreatedAt)
-                .ToListAsync();
-        }
-
         public async Task<BlogPost?> UpdateBlogPost(int authorId, int postId, UpdateBlogPostDTO dto)
         {
             var blogPost = await applicationDBContext.BlogPosts
@@ -72,9 +57,6 @@ namespace backend_app.Services
                 .Where(bp => bp.Id == postId && bp.AuthorId == authorId)
                 .FirstOrDefaultAsync();
 
-            if (blogPost == null)
-                return false;
-
             applicationDBContext.BlogPosts.Remove(blogPost);
             await applicationDBContext.SaveChangesAsync();
             return true;
@@ -82,12 +64,6 @@ namespace backend_app.Services
 
         public async Task<BlogComment?> AddComment(int authorId, int postId, CreateBlogCommentDTO dto)
         {
-            var postExists = await applicationDBContext.BlogPosts
-                .AnyAsync(bp => bp.Id == postId);
-
-            if (!postExists)
-                return null;
-
             var comment = new BlogComment
             {
                 PostId = postId,

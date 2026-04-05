@@ -20,19 +20,10 @@ namespace backend_app.Controllers
             return Ok(post);
         }
 
-        [HttpGet("my-posts")]
-        public async Task<ActionResult> GetMyBlogPosts()
+        [HttpGet("my-posts/{authorId}")]
+        public async Task<ActionResult> GetMyBlogPosts(int authorId)
         {
-            var authorId = (int)HttpContext.Items["UserId"]!;
             var posts = await blogService.GetMyBlogPosts(authorId);
-            return Ok(posts);
-        }
-
-        [HttpGet("student/{studentId}")]
-        public async Task<ActionResult> GetStudentBlogPosts(int studentId)
-        {
-            var tutorId = (int)HttpContext.Items["UserId"]!;
-            var posts = await blogService.GetStudentBlogPosts(tutorId, studentId);
             return Ok(posts);
         }
 

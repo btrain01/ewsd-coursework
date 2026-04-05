@@ -11,6 +11,7 @@ namespace backend_app.Configurations
         {
             CreateMap<string, UserDTO>().ConvertUsing<JsonToObjectConverter<UserDTO>>();
             CreateMap<string, UserToken>().ConvertUsing<JsonToObjectConverter<UserToken>>();
+            CreateMap<User, UserToken>();
             CreateMap<CreateMessageDTO, Message>();
         }
     }

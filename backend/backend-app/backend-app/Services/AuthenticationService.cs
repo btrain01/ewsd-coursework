@@ -1,11 +1,12 @@
-﻿using backend_app.Context;
+﻿using AutoMapper;
+using backend_app.Context;
 using backend_app.DTOs;
 using backend_app.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend_app.Services
 {
-    public partial class AuthenticationService (ApplicationDBContext applicationDBContext, ILogger<AuthenticationService> logger, AuthenticationUserContext authenticationUserContext)
+    public partial class AuthenticationService (ApplicationDBContext applicationDBContext, IMapper mapper, AuthenticationUserContext authenticationUserContext)
     {
 
         public async Task<UserToken> Login(LoginRequest loginRequest)
@@ -13,10 +14,10 @@ namespace backend_app.Services
             var user = await applicationDBContext.Users
                 .Include(u => u.Role.RolePermissions)
                 .ThenInclude(rp => rp.Permission)
-                .Where(x => x.Username == loginRequest.Username && x.PasswordHash == loginRequest.Password)
+                .Where(x => x.Username == loginRequest.Username)
                 .FirstOrDefaultAsync();
 
-            if (user == null)
+            if (user == null || !BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.PasswordHash))
                 return null;
 
             user.IsLoggedIn = true;
@@ -75,14 +76,14 @@ namespace backend_app.Services
 
 
 
-        public async Task<User> RegisterUser(RegistrationDTO userDTO)
+        public async Task<UserToken> RegisterUser(RegistrationDTO userDTO)
         {
             var user = new User()
             {
                 Username = userDTO.Username,
                 FirstName = userDTO.FirstName,
                 LastName = userDTO.LastName,
-                PasswordHash = userDTO.Password,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDTO.Password, workFactor: 12),
                 Email = userDTO.Email,
                 RoleId = userDTO.RoleId
             };
@@ -91,7 +92,7 @@ namespace backend_app.Services
 
             await applicationDBContext.SaveChangesAsync();
 
-            return user;
+            return mapper.Map<UserToken>(user);
         }
     }
 }

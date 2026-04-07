@@ -149,14 +149,14 @@
     } catch(e) {}
 
     // ── Wire up once backend provides GET /users?role=student ──
-    // try {
-    //   const res = await fetch(`${API_BASE}/users?role=student`, { headers: authHeaders() });
-    //   if (res.ok) {
-    //     allStudents = await res.json();
-    //     document.getElementById('noticeBar').style.display = 'none';
-    //     applyFilters();
-    //   }
-    // } catch(e) {}
+    try {
+      const res = await fetch(`${API_BASE}/users?role=student`, { headers: authHeaders() });
+      if (res.ok) {
+        allStudents = await res.json();
+        document.getElementById('noticeBar').style.display = 'none';
+        applyFilters();
+      }
+    } catch(e) {}
   }
 
   function applyFilters() {

@@ -175,9 +175,9 @@
           </div>
         </div>
 
-        <div class="notice-bar">
+        <!-- <div class="notice-bar">
           ⚠️ System-wide stats require list endpoints not yet built. Numbers will populate once your partner adds <code>GET /users?role=student</code> and <code>GET /users?role=tutor</code>.
-        </div>
+        </div> -->
 
         <!-- Stats -->
         <div class="stats-row">
@@ -307,16 +307,16 @@
     }
 
     // ── Ready to wire up once backend adds these endpoints ────────
-    // function renderUserRow(user, roleLabel, pillClass) {
-    //   return `<div class="user-row">
-    //     <div class="user-av">${initials(user.fullName || user.username)}</div>
-    //     <div class="user-info">
-    //       <div class="user-name">${user.fullName || user.username}</div>
-    //       <div class="user-meta">${user.email}</div>
-    //     </div>
-    //     <span class="pill ${pillClass}">${roleLabel}</span>
-    //   </div>`;
-    // }
+    function renderUserRow(user, roleLabel, pillClass) {
+      return `<div class="user-row">
+        <div class="user-av">${initials(user.fullName || user.username)}</div>
+        <div class="user-info">
+          <div class="user-name">${user.fullName || user.username}</div>
+          <div class="user-meta">${user.email}</div>
+        </div>
+        <span class="pill ${pillClass}">${roleLabel}</span>
+      </div>`;
+    }
     // ─────────────────────────────────────────────────────────────
 
     async function logoutUser() {

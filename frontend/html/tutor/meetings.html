@@ -140,6 +140,10 @@
           <input class="form-input" id="meetLink" type="text" placeholder="URL or room number" />
         </div>
       </div>
+      <div class="form-group">
+        <label class="form-label">Participant User ID <span style="color:var(--gray-400);font-weight:400">(optional — auto-fills from your assignment)</span></label>
+        <input class="form-input" id="meetParticipant" type="number" placeholder="e.g. 3" />
+      </div>
       <div class="modal-actions">
         <button class="btn-cancel" onclick="closeModal()">Cancel</button>
         <button class="btn-save"   onclick="scheduleMeeting()">Schedule Meeting</button>
@@ -212,9 +216,29 @@
 
     function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': JSON.stringify(currentUser) }; }
 
-    const username = currentUser.username || 'Student';
+    const username = currentUser.username || 'Personal';
     document.getElementById('profileName').textContent = username;
     document.getElementById('topbarAv').textContent = username.substring(0, 2).toUpperCase();
+
+    // Load full profile and cache assigned user for participant inclusion
+    (async () => {
+      try {
+        const pRes = await fetch(`${API_BASE}/User/dashboard/${currentUser.id}`, { headers: authHeaders() });
+        if (pRes.ok) {
+          const p = await pRes.json();
+          const dn = p.fullName || p.username || username;
+          document.getElementById('profileName').textContent = dn;
+          document.getElementById('topbarAv').textContent = dn.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+        }
+        // Cache the assigned tutor/student for participant auto-fill
+        const assignRole = 'tutor';
+        const aRes = await fetch(`${API_BASE}/User/assignment/${assignRole}/${currentUser.id}`, { headers: authHeaders() });
+        if (aRes.ok) {
+          const a = await aRes.json();
+          localStorage.setItem('assignedUser', JSON.stringify(a));
+        }
+      } catch(e) {}
+    })();
 
     let allMeetings = [];
     let currentTab = 'upcoming';
@@ -222,12 +246,14 @@
     function formatDate(str) { return new Date(str).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' }); }
     function formatTime(str) { return new Date(str).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); }
 
+    // MeetingStatus enum: 0=Scheduled, 1=InProgress, 2=Completed, 3=Cancelled
     function statusPill(s) {
-      const map = { SCHEDULED: ['pill-pending','Scheduled'], CONFIRMED: ['pill-done','Confirmed'], IN_PROGRESS: ['pill-done','In Progress'], COMPLETED: ['pill-done','Completed'], CANCELLED: ['pill-cancelled','Cancelled'] };
-      const [cls, label] = map[s] || ['pill-pending', s];
+      const map = { 0: ['pill-pending','Scheduled'], 1: ['pill-done','In Progress'], 2: ['pill-done','Completed'], 3: ['pill-cancelled','Cancelled'] };
+      const [cls, label] = map[s] ?? ['pill-pending', 'Unknown'];
       return `<span class="pill ${cls}">${label}</span>`;
     }
-    function typePill(t) { return t === 'VIRTUAL' ? `<span class="pill pill-virtual">Virtual</span>` : `<span class="pill pill-done">In-Person</span>`; }
+    // MeetingType enum: 0=PHYSICAL, 1=VIRTUAL
+    function typePill(t) { return t === 1 ? `<span class="pill pill-virtual">Virtual</span>` : `<span class="pill pill-done">In-Person</span>`; }
 
     async function loadMeetings() {
       try {
@@ -241,7 +267,8 @@
       const now = new Date();
       const filtered = allMeetings.filter(m => {
         const d = new Date(m.scheduledAt);
-        return currentTab === 'upcoming' ? (d >= now && m.meetingStatus !== 'CANCELLED' && m.meetingStatus !== 'COMPLETED') : (d < now || m.meetingStatus === 'COMPLETED' || m.meetingStatus === 'CANCELLED');
+        // 2=Completed, 3=Cancelled
+        return currentTab === 'upcoming' ? (d >= now && m.meetingStatus !== 3 && m.meetingStatus !== 2) : (d < now || m.meetingStatus === 2 || m.meetingStatus === 3);
       });
 
       const grid = document.getElementById('meetingsGrid');
@@ -297,10 +324,24 @@
       if (!title || !dateVal) { errEl.textContent = 'Please enter a title and date.'; errEl.style.display = 'block'; return; }
 
       errEl.style.display = 'none';
+
+      // Use manually entered participant ID first, fall back to cached assigned user
+      const manualParticipant = parseInt(document.getElementById('meetParticipant').value) || null;
+      const assignedUser = JSON.parse(localStorage.getItem('assignedUser') || 'null');
+      const participantToAdd = manualParticipant || (assignedUser ? assignedUser.id : null);
+
       try {
         const res = await fetch(`${API_BASE}/Meeting/create/${currentUser.id}`, {
           method: 'POST', headers: authHeaders(),
-          body: JSON.stringify({ title, description: desc, scheduledAt: new Date(dateVal).toISOString(), durationMinutes: duration, meetingType: type, locationOrUrl: link, meetingStatus: 'SCHEDULED' })
+          body: JSON.stringify({
+            title,
+            description: desc,
+            scheduledAt: new Date(dateVal).toISOString(),
+            durationMinutes: duration,
+            meetingType: type === 'VIRTUAL' ? 1 : 0,
+            locationOrUrl: link,
+            participantIds: participantToAdd ? [participantToAdd] : []
+          })
         });
         if (res.ok) {
           sucEl.style.display = 'block';

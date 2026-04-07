@@ -11,11 +11,13 @@ namespace backend_app.Attributes
     {
         private readonly IMapper mapper;
         private readonly AuthenticationService authenticationService;
+        private readonly AuthenticationUserContext authenticationUserContext;
 
-        public AuthenticationAttribute(IMapper mapper, AuthenticationService authenticationService)
+        public AuthenticationAttribute(IMapper mapper, AuthenticationService authenticationService, AuthenticationUserContext authenticationUserContext)
         {
             this.mapper = mapper;
             this.authenticationService = authenticationService;
+            this.authenticationUserContext = authenticationUserContext;
         }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -36,6 +38,9 @@ namespace backend_app.Attributes
                 context.Result = unauthorizationObject;
                 return;
             }
+
+            authenticationUserContext.UserId = user.Id;
+            authenticationUserContext.Username = user.Username;
 
             var isLoggedIn = await authenticationService.IsLoggedIn(user.Id);
 

@@ -38,7 +38,6 @@ namespace backend_app.Services
                     })]
             };
 
-            authenticationUserContext.Initialize(userToken.Id, userToken.Username, userToken.Role);
             return userToken;
         } 
 

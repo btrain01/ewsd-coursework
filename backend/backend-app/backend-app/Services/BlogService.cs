@@ -1,6 +1,5 @@
 ﻿using backend_app.Context;
 using backend_app.DTOs;
-using backend_app.Enums;
 using backend_app.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,8 +13,7 @@ namespace backend_app.Services
             {
                 AuthorId = authorId,
                 Title = dto.Title,
-                Content = dto.Content,
-                Status = BlogPostStatus.Draft
+                Body = dto.Content,
             };
 
             applicationDBContext.BlogPosts.Add(blogPost);
@@ -41,11 +39,7 @@ namespace backend_app.Services
                 return null;
 
             blogPost.Title = dto.Title;
-            blogPost.Content = dto.Content;
-            blogPost.Status = dto.Status;
-
-            if (dto.Status == BlogPostStatus.Published && blogPost.PublishedAt == null)
-                blogPost.PublishedAt = DateTime.UtcNow;
+            blogPost.Body = dto.Content;
 
             await applicationDBContext.SaveChangesAsync();
             return blogPost;

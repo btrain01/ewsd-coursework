@@ -13,15 +13,13 @@ namespace backend_app.Models
         [Required]
         public int AuthorId { get; set; }
 
+        
         [Required, MaxLength(255)]
-        public string Title { get; set; } = string.Empty;
+        public string Title { get; set; }
 
         [Required]
-        public string Content { get; set; } = string.Empty;
+        public string Body { get; set; }
 
-        public BlogPostStatus Status { get; set; } = BlogPostStatus.Draft;
-
-        public DateTime? PublishedAt { get; set; }
 
         [ForeignKey(nameof(AuthorId))]
         public User Author { get; set; } = null!;

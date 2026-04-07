@@ -8,13 +8,13 @@ namespace backend_app.Controllers
     [ApiController]
     [Route("[controller]")]
     [ServiceFilter(typeof(AuthenticationAttribute))]
-    public class BlogController(BlogService blogService) : ControllerBase
+    public class BlogController(BlogService blogService, AuthenticationUserContext authenticationUserContext, ILogger<BlogController> logger) : ControllerBase
     {
         [HttpPost("create")]
         public async Task<ActionResult> CreateBlogPost([FromBody] CreateBlogPostDTO dto)
         {
-            var authorId = (int)HttpContext.Items["UserId"]!;
-            var post = await blogService.CreateBlogPost(authorId, dto);
+            logger.LogInformation("auth context {}, {}", authenticationUserContext.UserId, authenticationUserContext.Username);
+            var post = await blogService.CreateBlogPost(authenticationUserContext.UserId, dto);
             if (post == null)
                 return BadRequest("Blog post could not be created");
             return Ok(post);
@@ -30,8 +30,8 @@ namespace backend_app.Controllers
         [HttpPut("update/{postId}")]
         public async Task<ActionResult> UpdateBlogPost(int postId, [FromBody] UpdateBlogPostDTO dto)
         {
-            var authorId = (int)HttpContext.Items["UserId"]!;
-            var post = await blogService.UpdateBlogPost(authorId, postId, dto);
+            var post = await blogService.UpdateBlogPost(authenticationUserContext.UserId, postId, dto);
+            
             if (post == null)
                 return NotFound("Blog post not found or you are not the author");
             return Ok(post);
@@ -40,20 +40,22 @@ namespace backend_app.Controllers
         [HttpDelete("delete/{postId}")]
         public async Task<ActionResult> DeleteBlogPost(int postId)
         {
-            var authorId = (int)HttpContext.Items["UserId"]!;
-            var result = await blogService.DeleteBlogPost(authorId, postId);
+            var result = await blogService.DeleteBlogPost(authenticationUserContext.UserId, postId);
+
             if (!result)
                 return NotFound("Blog post not found or you are not the author");
+            
             return Ok("Blog post deleted successfully");
         }
 
         [HttpPost("{postId}/comment")]
         public async Task<ActionResult> AddComment(int postId, [FromBody] CreateBlogCommentDTO dto)
         {
-            var authorId = (int)HttpContext.Items["UserId"]!;
-            var comment = await blogService.AddComment(authorId, postId, dto);
+            var comment = await blogService.AddComment(authenticationUserContext.UserId, postId, dto);
+            
             if (comment == null)
                 return NotFound("Blog post not found");
+            
             return Ok(comment);
         }
     }

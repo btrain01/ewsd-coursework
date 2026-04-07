@@ -1,4 +1,5 @@
 using backend_app.Enums;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -22,8 +23,10 @@ namespace backend_app.Models
 
 
         [ForeignKey(nameof(AuthorId))]
+        [JsonIgnore]
         public User Author { get; set; } = null!;
 
+        [JsonIgnore]
         public ICollection<BlogComment> Comments { get; set; } = [];
     }
 }

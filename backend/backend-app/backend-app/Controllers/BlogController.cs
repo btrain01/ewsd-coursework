@@ -8,22 +8,21 @@ namespace backend_app.Controllers
     [ApiController]
     [Route("[controller]")]
     [ServiceFilter(typeof(AuthenticationAttribute))]
-    public class BlogController(BlogService blogService, AuthenticationUserContext authenticationUserContext, ILogger<BlogController> logger) : ControllerBase
+    public class BlogController(BlogService blogService, AuthenticationUserContext authenticationUserContext) : ControllerBase
     {
         [HttpPost("create")]
         public async Task<ActionResult> CreateBlogPost([FromBody] CreateBlogPostDTO dto)
         {
-            logger.LogInformation("auth context {}, {}", authenticationUserContext.UserId, authenticationUserContext.Username);
             var post = await blogService.CreateBlogPost(authenticationUserContext.UserId, dto);
             if (post == null)
                 return BadRequest("Blog post could not be created");
             return Ok(post);
         }
 
-        [HttpGet("my-posts/{authorId}")]
-        public async Task<ActionResult> GetMyBlogPosts(int authorId)
+        [HttpGet("my-posts")]
+        public async Task<ActionResult> GetMyBlogPosts()
         {
-            var posts = await blogService.GetMyBlogPosts(authorId);
+            var posts = await blogService.GetMyBlogPosts(authenticationUserContext.UserId);
             return Ok(posts);
         }
 

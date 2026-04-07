@@ -20,12 +20,15 @@ namespace backend_app.Models
         public string? Notes { get; set; }
 
         [ForeignKey(nameof(StudentId))]
-        public User Student { get; set; } = null!;
+        [InverseProperty(nameof(User.StudentAssignments))]
+        public User Student { get; set; }
 
         [ForeignKey(nameof(TutorId))]
-        public User Tutor { get; set; } = null!;
+        [InverseProperty(nameof(User.TutorAssignments))]
+        public User Tutor { get; set; }
 
         [ForeignKey(nameof(AllocatedBy))]
+        [InverseProperty(nameof(User.AllocatedAssignments))]
         public User? AllocatedByUser { get; set; }
     }
 }

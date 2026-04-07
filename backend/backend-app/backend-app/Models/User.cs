@@ -29,9 +29,21 @@ namespace backend_app.Models
         public Role Role { get; set; }
 
         [JsonIgnore]
-        public ICollection<Message> SentMessages { get; set; } = [];
+        [InverseProperty(nameof(TutorAssignment.Tutor))]
+        public ICollection<TutorAssignment> TutorAssignments { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty(nameof(TutorAssignment.Student))]
+        public ICollection<TutorAssignment> StudentAssignments { get; set; }
+
+        [JsonIgnore]
+        [InverseProperty(nameof(TutorAssignment.AllocatedByUser))]
+        public ICollection<TutorAssignment> AllocatedAssignments { get; set; }
+
+        [JsonIgnore]
+        public ICollection<Message> SentMessages { get; set; }
         
         [JsonIgnore]
-        public ICollection<Message> ReceivedMessages { get; set; } = [];
+        public ICollection<Message> ReceivedMessages { get; set; }
     }
 }

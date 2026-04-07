@@ -1,4 +1,5 @@
 using backend_app.Attributes;
+using backend_app.Configurations;
 using backend_app.Context;
 using backend_app.DTOs;
 using backend_app.Services;
@@ -21,6 +22,7 @@ builder.Services.AddControllers()
 builder.Services.AddOpenApi();
 
 //make cdi container aware of auth services
+builder.Services.AddExceptionHandler<ExceptionMapper>();
 builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthenticationAttribute>();
@@ -66,6 +68,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors();
 
 app.UseAuthorization();
+
+app.UseExceptionHandler(_ => { });
 
 app.MapControllers();
 

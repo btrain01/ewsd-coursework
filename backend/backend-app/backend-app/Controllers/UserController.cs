@@ -1,4 +1,5 @@
 ﻿using backend_app.Attributes;
+using backend_app.DTOs;
 using backend_app.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +25,48 @@ namespace backend_app.Controllers
             var tutor = await userService.GetTutorByStudentId(userId);
             if (tutor == null)
                 return NotFound("No tutor assigned");
+            return Ok(tutor);
+        }
+
+        [HttpPost("allocation")]
+        public async Task<ActionResult> AllocateTutor([FromBody] AllocationDTO allocationDTO)
+        {
+            var tutor = await userService.AllocateTutor(allocationDTO);
+            if (tutor == null)
+                return NotFound("Tutor or Student not found");
+            return Ok(tutor);
+        }
+
+        [HttpPost("allocation/bulk")]
+        public async Task<ActionResult> AllocateTutor([FromBody] BulkAllocationDTO bulkAllocationDTO)
+        {
+            var tutor = await userService.AllocateStudentsToTutor(bulkAllocationDTO);
+            
+            if (tutor == null)
+                return NotFound("Tutor or Student not found");
+            
+            return Ok(tutor);
+        }
+
+        [HttpGet("reports/students/no-tutor")]
+        public async Task<ActionResult> GetUnAllocatedStudents()
+        {
+            var tutor = await userService.GetUnAllocatedStudents();
+            
+            if (tutor == null)
+                return NoContent();
+            
+            return Ok(tutor);
+        }
+
+        [HttpGet("reports/students/in-active")]
+        public async Task<ActionResult> GetInActiveStudents([FromQuery(Name = "days")] int days)
+        {
+            var tutor = await userService.GetInActiveUsers(days);
+            
+            if (tutor == null)
+                return NoContent();
+            
             return Ok(tutor);
         }
 
@@ -60,6 +103,17 @@ namespace backend_app.Controllers
             var messages = await userService.GetUserMessages(userId);
             if (messages == null)
                 return NotFound("No messages found");
+            return Ok(messages);
+        }
+
+        [HttpGet("role/{roleId}")]
+        public async Task<ActionResult> GetUsersByRole(int roleId)
+        {
+            var messages = await userService.GetUsersByRole(roleId);
+            
+            if (messages == null)
+                return NoContent();
+
             return Ok(messages);
         }
     }

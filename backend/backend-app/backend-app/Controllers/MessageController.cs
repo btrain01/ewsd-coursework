@@ -22,7 +22,7 @@ namespace backend_app.Controllers
         }
 
         [HttpGet("recent")]
-        public async Task GetIncomingMessages([FromQuery(Name = "auth")] String userToken, CancellationToken cancellationToken)
+        public async Task GetIncomingMessages([FromQuery(Name = "auth")] string userToken, CancellationToken cancellationToken)
         {
             var result = messageService.OpenStream(userToken, cancellationToken);
             

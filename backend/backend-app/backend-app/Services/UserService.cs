@@ -1,6 +1,9 @@
 ﻿using backend_app.Context;
 using backend_app.DTOs;
+using backend_app.Enums;
+using backend_app.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
 using System.Collections.ObjectModel;
 
 namespace backend_app.Services
@@ -47,12 +50,12 @@ namespace backend_app.Services
             return allocation;
         }
 
-        public async Task<StudentTutorDTO> GetStudentsByTutorId(int userId)
+        public async Task<ICollection<StudentTutorDTO>> GetStudentsByTutorId(int userId)
         {
             var allocation = await applicationDBContext.TutorAssignments
                 .Include(ts => ts.Student)
                 .Where(ts => ts.TutorId == userId)
-                .Select(ts => new StudentTutorDTO ()
+                .Select(ts => new StudentTutorDTO()
                 {
                     Id = ts.Student.Id,
                     Name = $"{ts.Student.FirstName} {ts.Student.LastName}",
@@ -60,12 +63,100 @@ namespace backend_app.Services
                     Notes = ts.Notes,
                     AllocatedAt = ts.CreatedAt
                 })
-                .FirstOrDefaultAsync();
+                .ToListAsync();
 
-            if (allocation == null)
+            if (allocation.Count == 0)
                 return null;
 
             return allocation;
+        }
+
+        public async Task<TutorAssignment> AllocateTutor(AllocationDTO allocationDTO)
+        {
+            var allocation = new TutorAssignment()
+            { 
+                TutorId = allocationDTO.TutorId,
+                StudentId = allocationDTO.StudentId
+            };
+
+            applicationDBContext.TutorAssignments.Add(allocation);
+
+            await applicationDBContext.SaveChangesAsync();
+
+            return allocation;
+        }
+
+        public async Task<ICollection<TutorAssignment>> AllocateStudentsToTutor(BulkAllocationDTO bulkAllocationDTO)
+        {
+            var allocations = new List<TutorAssignment>();
+
+            bulkAllocationDTO.Allocations.ForEach(allocationDTO =>
+            {
+                var allocation = new TutorAssignment()
+                {
+                    TutorId = allocationDTO.TutorId,
+                    StudentId = allocationDTO.StudentId
+                };
+
+                allocations.Add(allocation);
+            });
+
+            applicationDBContext.TutorAssignments.AddRange(allocations);
+
+            await applicationDBContext.SaveChangesAsync();
+
+            return allocations;
+        }
+
+        public async Task<ICollection<User>> GetUnAllocatedStudents()
+        {
+            var unAllocated = await applicationDBContext.Users
+                .Where(u => u.Role.Name == UserRole.STUDENT.GetDisplayName())
+                .Where(u => !u.StudentAssignments.Any(a => a.StudentId == u.Id))
+                .ToListAsync();
+
+            if (unAllocated.Count == 0)
+                return null;
+
+            return unAllocated;
+        }
+
+        public async Task<ICollection<User>> GetInActiveUsers(int inactiveDays = 7)
+        {
+            var cutoff = DateTime.UtcNow.AddDays(-inactiveDays);
+
+            var activeUserIds = await applicationDBContext.MeetingParticipants
+                .Where(mp => mp.CreatedAt >= cutoff)
+                .Select(mp => mp.UserId)
+                .Union(
+                    applicationDBContext.Messages
+                        .Where(m => m.CreatedAt >= cutoff)
+                        .Select(m => m.SenderId)
+                )
+                .Union(
+                    applicationDBContext.Documents
+                        .Where(d => d.CreatedAt >= cutoff)
+                        .Select(d => d.UploaderId)
+                )
+                .ToListAsync();
+
+            var inactiveUsers = await applicationDBContext.Users
+                .Where(u => !activeUserIds.Contains(u.Id))
+                .ToListAsync();
+
+            return inactiveUsers.Count == 0 ? null : inactiveUsers;
+        }
+
+        public async Task<ICollection<User>> GetUsersByRole(int roleId)
+        {
+            var users = await applicationDBContext.Users
+                .Where(u => u.RoleId == roleId)
+                .ToListAsync();
+
+            if (users.Count == 0)
+                return null;
+
+            return users;
         }
 
         public async Task<ObservableCollection<MeetingDTO>> GetUserMeetings(int userId)

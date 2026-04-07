@@ -1,10 +1,9 @@
 ﻿namespace backend_app.Enums
 {
-    public enum RoleName
+    public enum UserRole
     {
-        STAFF,
+        STUDENT,
         TUTOR,
         ADMIN,
-        STUDENT,
     }
 }

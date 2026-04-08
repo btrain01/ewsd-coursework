@@ -40,10 +40,7 @@ namespace backend_app.Services
             var participants = allParticipantIds.Select(userId => new MeetingParticipant
             {
                 MeetingId = meeting.Id,
-                UserId = userId,
-                AttendanceStatus = userId == organiserId
-                    ? AttendanceStatus.Accepted
-                    : AttendanceStatus.Pending
+                UserId = userId
             }).ToList();
 
             applicationDBContext.MeetingParticipants.AddRange(participants);

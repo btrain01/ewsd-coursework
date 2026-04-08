@@ -1,11 +1,11 @@
 using backend_app.Attributes;
 using backend_app.Configurations;
 using backend_app.Context;
-using backend_app.DTOs;
+using backend_app.Enums;
 using backend_app.Services;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Channels;
+using Npgsql;
+using System.Data.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +29,7 @@ builder.Services.AddScoped<AuthenticationAttribute>();
 builder.Services.AddScoped<MeetingService>();
 builder.Services.AddScoped<MessageService>();
 builder.Services.AddScoped<BlogService>();
+builder.Services.AddScoped<DocumentUploadService>();    
 builder.Services.AddScoped<AuthenticationUserContext>();
 builder.Services.AddSingleton<MessageChannelService>();
 builder.Services.AddSingleton(sp => sp.GetRequiredService<MessageChannelService>().GetGlobalWriter());
@@ -51,8 +52,15 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
+    var dataSource = @"Host=localhost;Username=postgres;Password=Gamerslife.2;Database=etsystem";
+
     options
-    .UseNpgsql(@"Host=localhost;Username=postgres;Password=Gamerslife.2;Database=etsystem")
+    .UseNpgsql(dataSource, optionsBuilder =>
+    {
+        optionsBuilder
+        .MapEnum<MeetingStatus>("meeting_status", nameTranslator: new UpperCaseTranslator())
+        .MapEnum<MeetingType>("meeting_type", nameTranslator: new UpperCaseTranslator());
+    })
     .UseSnakeCaseNamingConvention();
 });
 

@@ -267,7 +267,7 @@
       const filtered = allMeetings.filter(m => {
         const d = new Date(m.scheduledAt);
         // 2=Completed, 3=Cancelled
-        return currentTab === 'upcoming' ? (d >= now && m.meetingStatus !== 3 && m.meetingStatus !== 2) : (d < now || m.meetingStatus === 2 || m.meetingStatus === 3);
+        return currentTab === 'upcoming' ? (d >= now) : (d < now || m.meetingStatus === 2 || m.meetingStatus === 3);
       });
 
       const grid = document.getElementById('meetingsGrid');

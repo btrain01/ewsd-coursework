@@ -1,4 +1,5 @@
-﻿using backend_app.Models;
+﻿using backend_app.Enums;
+using backend_app.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend_app.Context
@@ -24,72 +25,6 @@ namespace backend_app.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            /*modelBuilder.Entity<UserRole>()
-                .HasOne(ur => ur.User)
-                .WithMany(u => u.UserRoles)
-                .HasForeignKey(ur => ur.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<UserRole>()
-                .HasOne(ur => ur.AssignedByUser)
-                .WithMany()
-                .HasForeignKey(ur => ur.AssignedBy)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            modelBuilder.Entity<TutorAssignment>()
-                .HasOne(ta => ta.Student)
-                .WithMany()
-                .HasForeignKey(ta => ta.StudentId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<TutorAssignment>()
-                .HasOne(ta => ta.Tutor)
-                .WithMany()
-                .HasForeignKey(ta => ta.TutorId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<TutorAssignment>()
-                .HasOne(ta => ta.RevokedByUser)
-                .WithMany()
-                .HasForeignKey(ta => ta.RevokedBy)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            modelBuilder.Entity<Message>()
-                .HasOne(m => m.Sender)
-                .WithMany(u => u.SentMessages)
-                .HasForeignKey(m => m.SenderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Message>()
-                .HasOne(m => m.Receiver)
-                .WithMany(u => u.ReceivedMessages)
-                .HasForeignKey(m => m.ReceiverId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<EmailLog>()
-                .HasOne(e => e.Recipient)
-                .WithMany()
-                .HasForeignKey(e => e.RecipientId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<EmailLog>()
-                .HasOne(e => e.Sender)
-                .WithMany()
-                .HasForeignKey(e => e.SenderId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            modelBuilder.Entity<DocumentComment>()
-                .HasOne(dc => dc.ParentComment)
-                .WithMany(dc => dc.Replies)
-                .HasForeignKey(dc => dc.ParentCommentId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<BlogComment>()
-                .HasOne(bc => bc.ParentComment)
-                .WithMany(bc => bc.Replies)
-                .HasForeignKey(bc => bc.ParentCommentId)
-                .OnDelete(DeleteBehavior.Restrict);*/
         }
     }
 }

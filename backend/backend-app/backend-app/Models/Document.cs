@@ -17,20 +17,19 @@ namespace backend_app.Models
         
         [Required]
         public string Filename { get; set; }
-        
+
         [Required]
-        public string MimePath { get; set; }
-        
+        public string? MimePath { get; set; } = string.Empty;
+
         [Required]
-        public int FileSize { get; set; }
-        
+        public int FileSize { get; set; } = 0;
+
         [Required]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         
         [Required]
         public string Content { get; set; } = string.Empty;
 
-        public DateTime? UploadedAt { get; set; }
 
         [ForeignKey(nameof(UploaderId))]
         public User Author { get; set; } = null!;

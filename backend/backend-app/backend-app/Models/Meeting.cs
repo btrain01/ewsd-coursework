@@ -18,8 +18,10 @@ namespace backend_app.Models
 
         public string? Description { get; set; }
 
+        [Column(TypeName = "meeting_status")]
         public MeetingStatus MeetingStatus { get; set; }
-        
+
+        [Column(TypeName = "meeting_type")]
         public MeetingType MeetingType { get; set; }
 
         [Required]

@@ -17,10 +17,6 @@ namespace backend_app.Models
         [Required]
         public int UserId { get; set; }
 
-        public AttendanceStatus AttendanceStatus { get; set; } = AttendanceStatus.Pending;
-
-        public DateTime? RespondedAt { get; set; }
-
         // Navigation properties
         [ForeignKey(nameof(MeetingId))]
         public Meeting Meeting { get; set; } = null!;

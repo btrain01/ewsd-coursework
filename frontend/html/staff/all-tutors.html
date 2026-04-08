@@ -45,7 +45,6 @@
   </header>
     <div class="content">
       <div class="page-hdr"><div class="page-hdr-left"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="page-hdr-title">All Tutors</span></div></div>
-      <div class="notice-bar">⚠️ Requires <code>GET /users?role=tutor</code> from backend. Table will populate automatically once that endpoint is built.</div>
       <div class="card">
         <div class="card-hdr"><div class="card-title">Tutor Directory</div><div class="card-sub">All personal tutors and their tutee counts</div></div>
         <div style="padding:12px 16px;border-bottom:1px solid var(--gray-100)"><input class="form-input" style="max-width:300px;margin:0" type="text" placeholder="Search by name..."/></div>
@@ -67,7 +66,7 @@
     const un = currentUser.username||'Staff';
     document.getElementById('profileName').textContent=un;
     document.getElementById('topbarAv').textContent=un.substring(0,2).toUpperCase();
-    try { const r=await fetch(`${API_BASE}/User/dashboard/${currentUser.id}`,{headers:authHeaders()}); if(r.ok){const p=await r.json();const dn=p.fullName||p.username||un;document.getElementById('profileName').textContent=dn;document.getElementById('topbarAv').textContent=initials(dn);} } catch(e){}
+    try { const r=await fetch(`${API_BASE}/User/role/${roleId}`,{headers:authHeaders()}); if(r.ok){const p=await r.json();const dn=p.fullName||p.username||un;document.getElementById('profileName').textContent=dn;document.getElementById('topbarAv').textContent=initials(dn);} } catch(e){}
   }
   async function logoutUser() {
     try{await fetch(`${API_BASE}/Authentication/logout/${currentUser.id}`,{method:'POST',headers:authHeaders()});}catch(e){}

@@ -103,9 +103,9 @@
       // Confirmed from database: 1=student, 2=tutor, 3=staff, 4=admin
       const ROLE_REDIRECTS = {
         STUDENT: "./student/student-dashboard.html",
-        TUTOR: "./tutor/tutor-dashboard.html",
-        STAFF: "./staff/staff-dashboard.html",
-        ADMIN: "./staff/staff-dashboard.html",
+        TUTOR:   "./tutor/tutor-dashboard.html",
+        STAFF:   "./staff/staff-dashboard.html",
+        ADMIN:   "./staff/staff-dashboard.html",
       };
 
       async function loginUser() {
@@ -133,10 +133,8 @@
             // Save session to localStorage
             localStorage.setItem("currentUser", JSON.stringify(userToken));
 
-            // Resolve roleId using workaround
-            const roleId = resolveRoleId(userToken);
-
-            console.log(`llll ${roleId}`);
+            // Resolve role — now async, tries 4 fallback methods
+            const roleId = await resolveRoleId(userToken);
 
             if (roleId && ROLE_REDIRECTS[roleId]) {
               window.location.href = ROLE_REDIRECTS[roleId];
@@ -161,31 +159,64 @@
         setLoading(false);
       }
 
-      // Workaround: resolve roleId from multiple possible sources
-      // Priority 1: roleName in token (once backend adds it)
-      // Priority 2: roleId stored in localStorage during registration
-      function resolveRoleId(userToken) {
-        // Priority 1 — roleName from backend (ready for when partner adds it)
-        const roles = userToken.role;
+      // ── ROLE RESOLUTION ──────────────────────────────────────────
+      // Tries multiple sources in order of reliability.
+      // The backend token's role array is only populated when role_permissions
+      // are seeded for that role — so we can't rely on it alone.
+      async function resolveRoleId(userToken) {
+        const idToName = { 1: "STUDENT", 2: "TUTOR", 3: "STAFF", 4: "ADMIN" };
 
-        if (roles.length >= 1) {
-          const nameMap = ["STUDENT", "TUTOR", "STAFF", "ADMIN"];
-          // const fromName = nameMap[roleName.toLowerCase()];
-          const role = roles.find((r) => nameMap.includes(r.name));
-
-          console.log("reached here 1234");
-          if (role) return role.name;
+        // Priority 1 — role array in token (works when role_permissions are seeded)
+        // Role names from backend: STUDENT, TUTOR, ADMIN, STAFF
+        if (userToken.role && userToken.role.length > 0) {
+          const validNames = ["STUDENT", "TUTOR", "STAFF", "ADMIN"];
+          const match = userToken.role.find(r => validNames.includes(r.name));
+          if (match) {
+            // Cache it so future logins don't need it re-seeded
+            localStorage.setItem("userRoleName", match.name);
+            return match.name;
+          }
         }
 
-        console.log("reached here 123");
+        // Priority 2 — cached role name from a previous successful login
+        const cachedRole = localStorage.getItem("userRoleName");
+        if (cachedRole) return cachedRole;
 
-        
-        // Priority 2 — roleId saved during registration
+        // Priority 3 — fetch role by calling GET /User/role/{roleId} 
+        // We need to know the roleId first — try the registration cache
         const storedRoleId = localStorage.getItem("registeredRoleId");
         if (storedRoleId) {
-          const idToName = { 1: "STUDENT", 2: "TUTOR", 3: "STAFF", 4: "ADMIN" };
-          return idToName[parseInt(storedRoleId)];
+          const name = idToName[parseInt(storedRoleId)];
+          if (name) {
+            localStorage.setItem("userRoleName", name);
+            return name;
+          }
         }
+
+        // Priority 4 — ask the backend what role this user belongs to
+        // by trying each role endpoint until we find the user
+        try {
+          for (const [rid, rname] of Object.entries(idToName)) {
+            const res = await fetch(`${API_BASE}/User/role/${rid}`, {
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": JSON.stringify(userToken)
+              }
+            });
+            if (res.ok) {
+              const users = await res.json();
+              if (Array.isArray(users) && users.some(u => u.id === userToken.id)) {
+                localStorage.setItem("userRoleName", rname);
+                localStorage.setItem("registeredRoleId", rid);
+                return rname;
+              }
+            }
+          }
+        } catch(e) {
+          console.warn("Role lookup failed:", e);
+        }
+
+        return null;
       }
 
       function setLoading(isLoading) {

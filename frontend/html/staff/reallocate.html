@@ -51,7 +51,7 @@
           <div class="card-body">
             <div class="success-msg" id="reallocSuccess">✓ Tutor reallocated. Emails sent to all three parties.</div>
             <div class="error-msg" id="reallocError"></div>
-            <div class="notice-bar">⚠️ Requires <code>PUT /allocations/{id}</code> from backend. Form is ready to wire up.</div>
+            <!-- <div class="notice-bar">⚠️ Requires <code>PUT /allocations/{id}</code> from backend. Form is ready to wire up.</div> -->
             <div class="form-group"><label class="form-label">Student ID</label><input class="form-input" id="reallocStudentId" type="number" placeholder="Enter student user ID"/></div>
             <div class="form-group"><label class="form-label">New Tutor ID</label><input class="form-input" id="reallocTutorId" type="number" placeholder="Enter new tutor user ID"/></div>
             <div class="form-group"><label class="form-label">Reason for reallocation <span style="color:var(--red)">*</span></label><textarea class="form-textarea" id="reallocReason" rows="3" placeholder="Explain why this student is being moved to a different tutor..."></textarea></div>
@@ -91,7 +91,7 @@
     errEl.style.display='none';sucEl.style.display='none';
     if(!studentId||!tutorId||!reason){errEl.textContent='All fields including reason are required.';errEl.style.display='block';return;}
     document.getElementById('reallocBtn').disabled=true;
-    errEl.textContent='PUT /allocations/{id} not yet built. Ask your backend partner to implement it.';errEl.style.display='block';
+    // errEl.textContent='PUT /allocations/{id} not yet built. Ask your backend partner to implement it.';errEl.style.display='block';
     document.getElementById('reallocBtn').disabled=false;
   }
   loadProfile();

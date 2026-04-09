@@ -310,7 +310,7 @@
 
     let allMessages = [];
     let currentTab = 'inbox';
-    let selectedMsg = null;
+    let selectedChat = null;
 
     async function loadMessages() {
       try {
@@ -326,12 +326,30 @@
       }
     }
 
+    async function maintainEventChannel() {
+      const eventSource = new EventSource(`${API_BASE}/Messsage/recent?auth=${JSON.stringify(currentUser)}`);
+
+      eventSource.addEventListener('messages', async (event) => {
+        const payload = JSON.parse(event.data);
+        await loadMessages();
+        if (selectedChat?.id) {
+            openThread(selectedChat.id);
+        }
+      })
+
+      eventSource.onerror = () => {
+        if (eventSource.readyState === EventSource.CONNECTING) {
+          console.log('Reconnecting...');
+        }
+      };
+    }
+
     function renderList(filter = '') {
       const isInbox = currentTab === 'inbox';
-      let msgs = allMessages.filter(m => isInbox ? m.recipientId === currentUser.id : m.senderId === currentUser.id);
+      let msgs = allMessages;
       if (filter) {
         const q = filter.toLowerCase();
-        msgs = msgs.filter(m => (m.subject || '').toLowerCase().includes(q) || (m.body || '').toLowerCase().includes(q));
+        msgs = msgs.filter(chat => chat.messages.filter(m => (m.subject || '').toLowerCase().includes(q) || (m.body || '').toLowerCase().includes(q)))
       }
 
       const body = document.getElementById('msgListBody');
@@ -341,54 +359,64 @@
       }
 
       body.innerHTML = msgs.map(m => {
-        const isUnread = !m.isRead && m.recipientId === currentUser.id;
-        const otherParty = currentTab === 'inbox' ? `User #${m.senderId}` : `To: User #${m.recipientId}`;
+        const isUnread = m.messages.some(m => m.isRead == false)
+        const otherParty = currentTab === 'inbox' ? `User #${m.id}` : `To: User #${currentUser.id}`;
+        const mostRecentMessage = [...m.messages].sort((a, b) => b.id - a.id)[0]
+        
         return `
-          <div class="msg-item ${isUnread ? 'unread' : ''} ${selectedMsg?.id === m.id ? 'active' : ''}"
+          <div class="msg-item ${isUnread ? 'unread' : ''} ${selectedChat?.id === m.id ? 'active' : ''}"
                onclick="openThread(${m.id})">
-            <div class="msg-av" style="background:${m.senderId === currentUser.id ? 'var(--gray-400)' : 'var(--blue)'}">
-              ${m.senderId === currentUser.id ? 'ME' : `U${m.senderId}`}
+            <div class="msg-av" style="background:${m.id === currentUser.id ? 'var(--gray-400)' : 'var(--blue)'}">
+              ${m.id === currentUser.id ? 'ME' : `U${m.id}`}
             </div>
             <div class="msg-item-body">
               <div class="msg-item-top">
                 <span class="msg-item-from">${otherParty}</span>
-                <span class="msg-item-time">${timeAgo(m.createdAt)}</span>
               </div>
-              <div class="msg-item-subject">${m.subject || '(No subject)'}</div>
-              <div class="msg-item-preview">${m.body || ''}</div>
+              <div class="msg-item-subject">${mostRecentMessage.subject || '(No subject)'}</div>
+              <div class="msg-item-preview">${mostRecentMessage.body || ''}</div>
             </div>
             ${isUnread ? '<div class="unread-dot"></div>' : ''}
           </div>`;
       }).join('');
     }
 
-    function openThread(msgId) {
-      selectedMsg = allMessages.find(m => m.id === msgId);
-      if (!selectedMsg) return;
-      renderList(document.querySelector('.search-input').value);
-
-      const isFromMe = selectedMsg.senderId === currentUser.id;
+    function openThread(chat) {
+      selectedChat = allMessages.find(m => m.id == chat);
+      const thread = selectedChat
+      thread.messages.sort((a, b) => a.id - b.id)
       const panel = document.getElementById('threadPanel');
+      const firstMsg = thread.messages[0];
+      const lastMsg = thread.messages[thread.messages.length - 1];
+      const isFromMe = firstMsg.senderId === currentUser.id;
+      const replyToId = isFromMe ? firstMsg.recipientId : firstMsg.senderId;
+
+      const bubbles = thread.messages.map(msg => {
+        const msgIsFromMe = msg.senderId === currentUser.id;
+        return `
+          <div class="bubble-wrap ${msgIsFromMe ? 'me' : ''}">
+            <div class="bubble-av ${msgIsFromMe ? 'me-av' : ''}">${msgIsFromMe ? 'ME' : `U${msg.senderId}`}</div>
+            <div>
+              <div class="bubble ${msgIsFromMe ? 'me' : 'them'}">${msg.body}</div>
+              <div class="bubble-time">${timeAgo(msg.createdAt)}</div>
+            </div>
+          </div>`;
+      }).join('');
+
       panel.innerHTML = `
         <div class="thread-hdr">
-          <div class="thread-subject">${selectedMsg.subject || '(No subject)'}</div>
+          <div class="thread-subject">${firstMsg.subject || '(No subject)'}</div>
           <div class="thread-meta">
-            ${isFromMe ? `To: User #${selectedMsg.recipientId}` : `From: User #${selectedMsg.senderId}`}
-            &nbsp;·&nbsp; ${new Date(selectedMsg.createdAt).toLocaleString('en-GB')}
+            ${isFromMe ? `To: User #${firstMsg.recipientId}` : `From: User #${firstMsg.senderId}`}
+            &nbsp;·&nbsp; ${new Date(lastMsg.createdAt).toLocaleString('en-GB')}
           </div>
         </div>
         <div class="thread-body">
-          <div class="bubble-wrap ${isFromMe ? 'me' : ''}">
-            <div class="bubble-av ${isFromMe ? 'me-av' : ''}">${isFromMe ? 'ME' : `U${selectedMsg.senderId}`}</div>
-            <div>
-              <div class="bubble ${isFromMe ? 'me' : 'them'}">${selectedMsg.body}</div>
-              <div class="bubble-time">${timeAgo(selectedMsg.createdAt)}</div>
-            </div>
-          </div>
+          ${bubbles}
         </div>
         <div class="compose-area">
           <textarea class="compose-input" id="replyBody" placeholder="Write a reply..." rows="1"></textarea>
-          <button class="send-btn" onclick="sendReply(${selectedMsg.senderId === currentUser.id ? selectedMsg.recipientId : selectedMsg.senderId}, '${(selectedMsg.subject || '').replace(/'/g, "\\'")}')">
+          <button class="send-btn" onclick="sendReply(${replyToId}, '${(firstMsg.subject || '').replace(/'/g, "\\'")}')">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
             Reply
           </button>
@@ -404,11 +432,12 @@
         const res = await fetch(`${API_BASE}/Messsage/send`, {
           method: 'POST',
           headers: authHeaders(),
-          body: JSON.stringify({ senderId: currentUser.id, recipientId, subject: `Re: ${subject}`, body })
+          body: JSON.stringify({ recipientId, subject: `Re: ${subject}`, body })
         });
         if (res.ok) {
           document.getElementById('replyBody').value = '';
           await loadMessages();
+          openThread(selectedChat.id);
         }
       } catch(e) { console.error(e); }
       btn.disabled = false;
@@ -418,7 +447,7 @@
       currentTab = tab;
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       el.classList.add('active');
-      selectedMsg = null;
+      selectedChat = null;
       document.getElementById('threadPanel').innerHTML = `
         <div class="empty-thread">
           <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -491,6 +520,7 @@
     sob.addEventListener('mouseout',  () => { sob.style.background='var(--white)'; sob.style.color='var(--gray-600)'; sob.style.borderColor='var(--gray-200)'; });
 
     loadMessages();
+    maintainEventChannel();
   </script>
   </body>
 </html>

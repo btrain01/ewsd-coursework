@@ -216,7 +216,7 @@
 
     function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': JSON.stringify(currentUser) }; }
 
-    const username = currentUser.username || 'Personal';
+    const username = currentUser.username || 'Student';
     document.getElementById('profileName').textContent = username;
     document.getElementById('topbarAv').textContent = username.substring(0, 2).toUpperCase();
 
@@ -231,7 +231,7 @@
           document.getElementById('topbarAv').textContent = dn.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
         }
         // Cache the assigned tutor/student for participant auto-fill
-        const assignRole = 'tutor';
+        const assignRole = 'student';
         const aRes = await fetch(`${API_BASE}/User/assignment/${assignRole}/${currentUser.id}`, { headers: authHeaders() });
         if (aRes.ok) {
           const a = await aRes.json();
@@ -243,8 +243,29 @@
     let allMeetings = [];
     let currentTab = 'upcoming';
 
-    function formatDate(str) { return new Date(str).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' }); }
-    function formatTime(str) { return new Date(str).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); }
+    function formatDate(dateStr) {
+        const [time, date] = dateStr.split(" ");
+        const [day, month, year] = date.split("/");
+        const iso = `${year}-${month}-${day}T${time}`;
+
+        const d = new Date(iso);
+        return d.toLocaleDateString("en-GB", {
+            weekday: "short",
+            day: "numeric",
+            month: "long",
+        });
+    }
+
+    function formatTime(dateStr) {
+        const [time, date] = dateStr.split(" ");
+        const [day, month, year] = date.split("/");
+        const iso = `${year}-${month}-${day}T${time}`;
+        const d = new Date(iso);
+        return d.toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    }
 
     // MeetingStatus enum: 0=Scheduled, 1=InProgress, 2=Completed, 3=Cancelled
     function statusPill(s) {
@@ -266,9 +287,12 @@
     function renderMeetings() {
       const now = new Date();
       const filtered = allMeetings.filter(m => {
-        const d = new Date(m.scheduledAt);
+        const [time, date] = m.scheduledAt.split(" ");
+        const [day, month, year] = date.split("/");
+        const iso = `${year}-${month}-${day}T${time}`;
+        const d = new Date(iso);
         // 2=Completed, 3=Cancelled
-        return currentTab === 'upcoming' ? (d >= now && m.meetingStatus !== 3 && m.meetingStatus !== 2) : (d < now || m.meetingStatus === 2 || m.meetingStatus === 3);
+        return currentTab === 'upcoming' ? (d >= now) : (d < now || m.meetingStatus === "Completed" || m.meetingStatus === "Cancelled");
       });
 
       const grid = document.getElementById('meetingsGrid');

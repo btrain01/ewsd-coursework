@@ -186,7 +186,7 @@
     function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': JSON.stringify(currentUser) }; }
 
     // ── PROFILE ─────────────────────────────────────────────────
-    const username = currentUser.username || 'Tutor';
+    const username = currentUser.username || 'Student';
     document.getElementById('profileName').textContent = username;
     document.getElementById('topbarAv').textContent = username.substring(0, 2).toUpperCase();
     (async () => {
@@ -216,7 +216,7 @@
     async function loadPosts() {
       document.getElementById('postsList').innerHTML = '<div class="empty-state">Loading posts...</div>';
       try {
-        const res = await fetch(`${API_BASE}/Blog/my-posts/${currentUser.id}`, { headers: authHeaders() });
+        const res = await fetch(`${API_BASE}/Blog/my-posts`, { headers: authHeaders() });
         if (res.ok) {
           allPosts = await res.json();
           renderPosts();

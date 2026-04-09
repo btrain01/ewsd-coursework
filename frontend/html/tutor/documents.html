@@ -161,6 +161,24 @@
       } catch(e) { document.getElementById('docsBody').innerHTML = '<div class="empty-state">Could not reach the server</div>'; }
     }
 
+    async function downloadDocument(docId) {
+      const res = await fetch(`${API_BASE}/Document/download/${docId}`, { 
+        headers: authHeaders() 
+      });
+
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `document_${docId}`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        console.log("An error occurred");
+      }
+    }
+
     function renderDocs(filter = '') {
       let docs = allDocs;
       if (filter) { const q = filter.toLowerCase(); docs = docs.filter(d => (d.fileName || '').toLowerCase().includes(q) || (d.description || '').toLowerCase().includes(q)); }
@@ -178,7 +196,14 @@
           </div>
           <div class="doc-size">${formatSize(d.fileSizeBytes)}</div>
           <div class="doc-actions">
-            <button class="btn-dl"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button>
+            <button class="btn-dl" onclick="downloadDocument(${d.id})">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7,10 12,15 17,10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Download
+            </button>
           </div>
         </div>`).join('');
     }

@@ -1,5 +1,4 @@
-﻿using backend_app.Enums;
-using backend_app.Models;
+﻿using backend_app.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend_app.Context

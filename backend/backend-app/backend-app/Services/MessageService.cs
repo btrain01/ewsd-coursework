@@ -10,12 +10,14 @@ namespace backend_app.Services
 {
     public class MessageService(
         ApplicationDBContext applicationDBContext,
+        AuthenticationUserContext authenticationUserContext,
         MessageChannelService messageChannelService,
         IMapper mapper)
     {
         public async Task<ActionResponseDTO> CreateMessage(CreateMessageDTO messageDTO)
         {
             var message = mapper.Map<Message>(messageDTO);
+            message.SenderId = authenticationUserContext.UserId;
 
             applicationDBContext.Messages.Add(message);
             

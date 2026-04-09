@@ -50,6 +50,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddSwaggerGen();
+var datasourceColumnTranslator = new UpperCaseTranslator();
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
     var dataSource = @"Host=localhost;Username=postgres;Password=Gamerslife.2;Database=etsystem";
@@ -58,11 +59,12 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
     .UseNpgsql(dataSource, optionsBuilder =>
     {
         optionsBuilder
-        .MapEnum<MeetingStatus>("meeting_status", nameTranslator: new UpperCaseTranslator())
-        .MapEnum<MeetingType>("meeting_type", nameTranslator: new UpperCaseTranslator());
+        .MapEnum<MeetingStatus>("meeting_status", nameTranslator: datasourceColumnTranslator)
+        .MapEnum<MeetingType>("meeting_type", nameTranslator: datasourceColumnTranslator);
     })
     .UseSnakeCaseNamingConvention();
 });
+
 
 var app = builder.Build();
 

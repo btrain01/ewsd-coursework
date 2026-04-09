@@ -62,8 +62,7 @@ namespace backend_app.Services
             {
                 PostId = postId,
                 AuthorId = authorId,
-                Content = dto.Content,
-                ParentCommentId = dto.ParentCommentId
+                Body = dto.Content
             };
 
             applicationDBContext.BlogComments.Add(comment);

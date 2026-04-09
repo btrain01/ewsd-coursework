@@ -5,6 +5,7 @@ using backend_app.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using System.Collections.ObjectModel;
+using System.Reflection;
 
 namespace backend_app.Services
 { 
@@ -197,24 +198,44 @@ namespace backend_app.Services
             return [.. documents];
         }
 
-        public async Task<ObservableCollection<MessageDTO>> GetUserMessages(int userId)
+        public async Task<ObservableCollection<MessageResponseDTO>> GetUserMessages(int userId)
         {
+
             var messages = await applicationDBContext.Messages
                 .Where(m => m.RecipientId == userId || m.SenderId == userId)
-                .Select(m => new MessageDTO()
-                {
-                    Id = m.Id,
-                    SenderId = m.SenderId,
-                    RecipientId = m.RecipientId,
-                    Subject = m.Subject,
-                    Body = m.Body,
-                    IsRead = m.IsRead,
-                    CreatedAt = m.CreatedAt
-                })
                 .OrderByDescending(m => m.CreatedAt)
                 .ToListAsync();
- 
-            return [.. messages];
+
+            var groupedMessages = messages
+                .GroupBy(m =>
+                {
+                    var ids = new[] { m.SenderId, m.RecipientId }.Order();
+                    return string.Join("_", ids);
+                })
+                .Select(g =>
+                {
+                    var otherUserId = g.First().SenderId == userId
+                        ? g.First().RecipientId
+                        : g.First().SenderId;
+
+                    return new MessageResponseDTO()
+                    {
+                        Id = otherUserId,
+                        Messages = [.. g.Select(m => new MessageDTO()
+                        {
+                            Id = m.Id,
+                            SenderId = m.SenderId,
+                            RecipientId = m.RecipientId,
+                            Subject = m.Subject,
+                            Body = m.Body,
+                            IsRead = m.IsRead,
+                            CreatedAt = m.CreatedAt
+                        })]
+                    };
+                })
+                .ToList();
+
+            return [.. groupedMessages];
         }
     }
 }

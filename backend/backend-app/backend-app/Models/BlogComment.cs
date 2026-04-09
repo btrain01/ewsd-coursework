@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,20 +17,15 @@ namespace backend_app.Models
         public int AuthorId { get; set; }
 
         [Required]
-        public string Content { get; set; } = string.Empty;
-
-        public int? ParentCommentId { get; set; }
-
+        public string Body { get; set; } = string.Empty;
         
         [ForeignKey(nameof(PostId))]
-        public BlogPost Post { get; set; } = null!;
+        [JsonIgnore]
+        public BlogPost Post { get; set; }
 
         [ForeignKey(nameof(AuthorId))]
-        public User Author { get; set; } = null!;
-
-        [ForeignKey(nameof(ParentCommentId))]
-        public BlogComment? ParentComment { get; set; }
-        public ICollection<BlogComment> Replies { get; set; } = new List<BlogComment>();
+        [JsonIgnore]
+        public User Author { get; set; }
 
     }
 }

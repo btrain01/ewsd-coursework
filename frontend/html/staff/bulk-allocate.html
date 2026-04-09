@@ -758,7 +758,7 @@
     }
     async function logoutUser() {
       try { await fetch(`${API_BASE}/Authentication/logout/${currentUser.id}`, { method: 'POST', headers: authHeaders() }); } catch (e) { }
-      localStorage.clear(); window.location.href = '../login.html';
+      localStorage.removeItem('currentUser'); localStorage.removeItem('registeredUsername'); window.location.href = '../login.html';
     }
     function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('overlay').classList.add('show'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
@@ -766,39 +766,107 @@
     sob.addEventListener('mouseover', () => { sob.style.background = '#fee2e2'; sob.style.color = '#dc2626'; sob.style.borderColor = '#fecaca'; });
     sob.addEventListener('mouseout', () => { sob.style.background = 'var(--white)'; sob.style.color = 'var(--gray-600)'; sob.style.borderColor = 'var(--gray-200)'; });
 
-    const BASE_URL = "http://localhost:5188";
+    // ── COUNTER ──────────────────────────────────────────────────
+    function updateCount() {
+      const ids = document.getElementById('bulkStudentIds').value
+        .split(',').map(s => s.trim()).filter(s => s !== '');
+      const count = Math.min(ids.length, 10);
+      const el = document.getElementById('bulkCount');
+      el.textContent = `${count} / 10 students entered`;
+      el.style.color = ids.length > 10 ? 'var(--red)' : 'var(--gray-400)';
+    }
 
-    async function doBulkAllocate() {
-      // Example: manually build allocations (you can replace with table inputs later)
-      const allocations = [
-        { studentId: 1, tutorId: 2 },
-        { studentId: 2, tutorId: 3 }
-      ];
+    // ── PREVIEW ───────────────────────────────────────────────────
+    function previewBulk() {
+      const rawIds = document.getElementById('bulkStudentIds').value
+        .split(',').map(s => s.trim()).filter(s => s !== '');
+      const tutorId = document.getElementById('bulkTutorId').value.trim();
+      const errEl   = document.getElementById('bulkError');
+
+      errEl.style.display = 'none';
+      document.getElementById('bulkSuccess').style.display = 'none';
+
+      if (rawIds.length === 0) {
+        errEl.textContent = 'Please enter at least one student ID.';
+        errEl.style.display = 'block'; return;
+      }
+      if (!tutorId) {
+        errEl.textContent = 'Please enter a tutor ID.';
+        errEl.style.display = 'block'; return;
+      }
+      if (rawIds.length > 10) {
+        errEl.textContent = 'Maximum 10 students per bulk allocation.';
+        errEl.style.display = 'block'; return;
+      }
+
+      const ids = rawIds.slice(0, 10);
+      document.getElementById('previewBody').innerHTML = ids.map((id, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>#${id}</td>
+          <td><span class="pill pill-yes">Ready</span></td>
+        </tr>`).join('');
+      document.getElementById('previewSection').style.display = 'block';
+    }
+
+    // ── CONFIRM BULK ALLOCATION ───────────────────────────────────
+    // Body shape: { allocations: [{ tutorId, studentId }, ...] }
+    async function doBulk() {
+      const rawIds  = document.getElementById('bulkStudentIds').value
+        .split(',').map(s => s.trim()).filter(s => s !== '');
+      const tutorId = parseInt(document.getElementById('bulkTutorId').value);
+      const errEl   = document.getElementById('bulkError');
+      const sucEl   = document.getElementById('bulkSuccess');
+
+      errEl.style.display = 'none';
+      sucEl.style.display = 'none';
+
+      if (rawIds.length === 0 || !tutorId) {
+        errEl.textContent = 'Please enter student IDs and a tutor ID.';
+        errEl.style.display = 'block'; return;
+      }
+      if (rawIds.length > 10) {
+        errEl.textContent = 'Maximum 10 students per bulk allocation.';
+        errEl.style.display = 'block'; return;
+      }
+
+      // Build the allocations array — each entry is { tutorId, studentId }
+      const allocations = rawIds.slice(0, 10).map(id => ({
+        tutorId:   tutorId,
+        studentId: parseInt(id)
+      }));
+
+      document.getElementById('bulkBtn').disabled = true;
 
       try {
-        const response = await fetch(`${BASE_URL}/User/allocation/bulk`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            allocations: allocations
-          })
+        const res = await fetch(`${API_BASE}/User/allocation/bulk`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ allocations })
         });
 
-        if (!response.ok) {
-          throw new Error("Bulk allocation failed");
+        if (res.ok) {
+          const data = await res.json();
+          const count = Array.isArray(data) ? data.length : allocations.length;
+          sucEl.textContent = `✓ ${count} student${count !== 1 ? 's' : ''} successfully allocated to tutor #${tutorId}.`;
+          sucEl.style.display = 'block';
+          // Reset form
+          document.getElementById('bulkStudentIds').value = '';
+          document.getElementById('bulkTutorId').value    = '';
+          document.getElementById('bulkNotes').value      = '';
+          document.getElementById('bulkCount').textContent = '0 / 10 students entered';
+          document.getElementById('previewSection').style.display = 'none';
+        } else {
+          const text = await res.text();
+          errEl.textContent = text || 'Bulk allocation failed. Please try again.';
+          errEl.style.display = 'block';
         }
-
-        const data = await response.json();
-        console.log("Bulk success:", data);
-
-        alert("Bulk allocation successful!");
-
-      } catch (error) {
-        console.error(error);
-        alert("Error in bulk allocation");
+      } catch(e) {
+        errEl.textContent = 'Could not reach the server.';
+        errEl.style.display = 'block';
       }
+
+      document.getElementById('bulkBtn').disabled = false;
     }
 
     loadProfile();

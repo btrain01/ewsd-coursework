@@ -9,10 +9,10 @@ using System.Reflection;
 
 namespace backend_app.Services
 { 
-    public class UserService(ApplicationDBContext applicationDBContext)
+    public class UserService(ApplicationDBContext applicationDBContext, AuthenticationUserContext authenticationUserContext)
     {
         public async Task<UserDTO> GetUserDashboard(int id)
-        {
+        { 
             var student = await applicationDBContext.Users
                 .Where(x => x.Id == id)
                 .Select(x => new UserDTO()
@@ -77,7 +77,8 @@ namespace backend_app.Services
             var allocation = new TutorAssignment()
             { 
                 TutorId = allocationDTO.TutorId,
-                StudentId = allocationDTO.StudentId
+                StudentId = allocationDTO.StudentId,
+                AllocatedBy = authenticationUserContext.UserId
             };
 
             applicationDBContext.TutorAssignments.Add(allocation);

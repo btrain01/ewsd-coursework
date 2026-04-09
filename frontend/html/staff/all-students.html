@@ -107,7 +107,6 @@
         </div>
         <span id="countBadge" style="font-size:13px;color:var(--gray-500)"></span>
       </div>
-      <div class="notice-bar" id="noticeBar">⚠️ Requires <code>GET /users?role=student</code> from backend. Table will populate automatically once that endpoint is built.</div>
       <div class="card">
         <div class="toolbar">
           <input class="search-input" type="text" placeholder="Search by name or email..." oninput="applyFilters()" id="searchInput"/>
@@ -150,7 +149,7 @@
 
     // ── Wire up once backend provides GET /users?role=student ──
     try {
-      const res = await fetch(`${API_BASE}/users?role=student`, { headers: authHeaders() });
+      const res = await fetch(`${API_BASE}/User/role/${roleId}`, { headers: authHeaders() });
       if (res.ok) {
         allStudents = await res.json();
         document.getElementById('noticeBar').style.display = 'none';

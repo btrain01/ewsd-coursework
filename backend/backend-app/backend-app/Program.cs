@@ -28,6 +28,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthenticationAttribute>();
 builder.Services.AddScoped<MeetingService>();
 builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<AlertService>();
 builder.Services.AddScoped<BlogService>();
 builder.Services.AddScoped<DocumentUploadService>();    
 builder.Services.AddScoped<AuthenticationUserContext>();
@@ -60,7 +61,8 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
     {
         optionsBuilder
         .MapEnum<MeetingStatus>("meeting_status", nameTranslator: datasourceColumnTranslator)
-        .MapEnum<MeetingType>("meeting_type", nameTranslator: datasourceColumnTranslator);
+        .MapEnum<MeetingType>("meeting_type", nameTranslator: datasourceColumnTranslator)
+        .MapEnum<NotificationType>("notification_type", nameTranslator: datasourceColumnTranslator);
     })
     .UseSnakeCaseNamingConvention();
 });

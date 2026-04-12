@@ -18,7 +18,8 @@ namespace backend_app.Models
         public string Email {get; set;} = string.Empty;
         
         public int RoleId { get; set; }
-        
+
+        [JsonIgnore]
         public string PasswordHash { get; set; }
         
         public bool IsLoggedIn { get; set; }

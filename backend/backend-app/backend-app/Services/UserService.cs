@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace backend_app.Services
 { 
-    public class UserService(ApplicationDBContext applicationDBContext, AuthenticationUserContext authenticationUserContext)
+    public class UserService(ApplicationDBContext applicationDBContext, AuthenticationUserContext authenticationUserContext, AlertService alertService)
     {
         public async Task<UserDTO> GetUserDashboard(int id)
         { 
@@ -85,27 +85,56 @@ namespace backend_app.Services
 
             await applicationDBContext.SaveChangesAsync();
 
+            await alertService.CreateAlert
+            (
+                [
+                    new ()
+                    {
+                        Id = allocationDTO.StudentId,
+                        Email = (await applicationDBContext.Users.FirstOrDefaultAsync(x => x.Id == allocationDTO.StudentId)).Email,
+                    },
+                    new ()
+                    {
+                        Id = allocationDTO.TutorId,
+                        Email = (await applicationDBContext.Users.FirstOrDefaultAsync(x => x.Id == allocationDTO.TutorId)).Email,
+                    }
+
+                ],
+                "Tutor Allocation"
+            );
+
             return allocation;
         }
 
         public async Task<ICollection<TutorAssignment>> AllocateStudentsToTutor(BulkAllocationDTO bulkAllocationDTO)
         {
-            var allocations = new List<TutorAssignment>();
-
-            bulkAllocationDTO.Allocations.ForEach(allocationDTO =>
+            var allocations = bulkAllocationDTO.Allocations.Select(a => new TutorAssignment
             {
-                var allocation = new TutorAssignment()
-                {
-                    TutorId = allocationDTO.TutorId,
-                    StudentId = allocationDTO.StudentId
-                };
-
-                allocations.Add(allocation);
-            });
+                TutorId = a.TutorId,
+                StudentId = a.StudentId,
+                AllocatedBy = authenticationUserContext.UserId
+            }).ToList();
 
             applicationDBContext.TutorAssignments.AddRange(allocations);
-
             await applicationDBContext.SaveChangesAsync();
+
+            var studentIds = bulkAllocationDTO.Allocations.Select(a => a.StudentId).ToList();
+            var tutorId = bulkAllocationDTO.Allocations.First().TutorId;
+            var allIds = studentIds.Append(tutorId).ToList();
+
+            var users = await applicationDBContext.Users
+                .Where(u => allIds.Contains(u.Id))
+                .Select(u => new { u.Id, u.Email })
+                .ToListAsync();
+
+            var userLookup = users.ToDictionary(u => u.Id, u => u.Email);
+
+            var userDTOs = studentIds
+                .Select(id => new UserDTO { Id = id, Email = userLookup[id] })
+                .Append(new UserDTO { Id = tutorId, Email = userLookup[tutorId] })
+                .ToList();
+
+            await alertService.CreateAlert(userDTOs, "Tutor Allocation");
 
             return allocations;
         }
@@ -153,6 +182,18 @@ namespace backend_app.Services
         {
             var users = await applicationDBContext.Users
                 .Where(u => u.RoleId == roleId)
+                .ToListAsync();
+
+            if (users.Count == 0)
+                return null;
+
+            return users;
+        }
+
+        public async Task<ICollection<User>> GetUsersByRole(string roleName)
+        {
+            var users = await applicationDBContext.Users
+                .Where(u => EF.Functions.Like(u.Role.Name.ToLower(), $"%{roleName.ToLower()}%"))
                 .ToListAsync();
 
             if (users.Count == 0)

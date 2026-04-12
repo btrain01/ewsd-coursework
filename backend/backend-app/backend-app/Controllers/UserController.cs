@@ -116,5 +116,16 @@ namespace backend_app.Controllers
 
             return Ok(messages);
         }
+
+        [HttpGet("role/name/{roleName}")]
+        public async Task<ActionResult> GetUsersByRole(string roleName)
+        {
+            var messages = await userService.GetUsersByRole(roleName);
+            
+            if (messages == null)
+                return NoContent();
+
+            return Ok(messages);
+        }
     }
 }

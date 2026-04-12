@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,14 +20,17 @@ namespace backend_app.Models
 
         public string? Notes { get; set; }
 
+        [JsonIgnore]
         [ForeignKey(nameof(StudentId))]
         [InverseProperty(nameof(User.StudentAssignments))]
         public User Student { get; set; }
 
+        [JsonIgnore]
         [ForeignKey(nameof(TutorId))]
         [InverseProperty(nameof(User.TutorAssignments))]
         public User Tutor { get; set; }
 
+        [JsonIgnore]
         [ForeignKey(nameof(AllocatedBy))]
         [InverseProperty(nameof(User.AllocatedAssignments))]
         public User? AllocatedByUser { get; set; }

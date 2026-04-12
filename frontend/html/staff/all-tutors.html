@@ -62,23 +62,83 @@
   if (!currentUser) window.location.href = '../login.html';
   function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': JSON.stringify(currentUser) }; }
   function initials(n) { if (!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+
+  let allTutors = [];
+
   async function loadProfile() {
-    const un = currentUser.username||'Staff';
-    document.getElementById('profileName').textContent=un;
-    document.getElementById('topbarAv').textContent=un.substring(0,2).toUpperCase();
-    try { const r=await fetch(`${API_BASE}/User/role/${roleId}`,{headers:authHeaders()}); if(r.ok){const p=await r.json();const dn=p.fullName||p.username||un;document.getElementById('profileName').textContent=dn;document.getElementById('topbarAv').textContent=initials(dn);} } catch(e){}
+    const un = currentUser.username || 'Staff';
+    document.getElementById('profileName').textContent = un;
+    document.getElementById('topbarAv').textContent = un.substring(0,2).toUpperCase();
+    try {
+      const r = await fetch(`${API_BASE}/User/dashboard/${currentUser.id}`, { headers: authHeaders() });
+      if (r.ok) { const p = await r.json(); const dn = p.fullName||p.username||un; document.getElementById('profileName').textContent=dn; document.getElementById('topbarAv').textContent=initials(dn); }
+    } catch(e) {}
   }
+
+  async function loadTutors() {
+    try {
+      const res = await fetch(`${API_BASE}/User/role/name/TUTOR`, { headers: authHeaders() });
+      if (res.ok) {
+        allTutors = await res.json();
+        renderTutors();
+      } else {
+        document.querySelector('.data-table tbody').innerHTML = '<tr><td colspan="4"><div class="empty-state">Could not load tutors</div></td></tr>';
+      }
+    } catch(e) {
+      document.querySelector('.data-table tbody').innerHTML = '<tr><td colspan="4"><div class="empty-state">Could not reach the server</div></td></tr>';
+    }
+  }
+
+  function renderTutors(filter = '') {
+    let tutors = allTutors;
+    if (filter) {
+      const q = filter.toLowerCase();
+      tutors = tutors.filter(t =>
+        `${t.firstName} ${t.lastName}`.toLowerCase().includes(q) ||
+        (t.email || '').toLowerCase().includes(q) ||
+        (t.username || '').toLowerCase().includes(q)
+      );
+    }
+    const tbody = document.querySelector('.data-table tbody');
+    if (tutors.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state">No tutors found</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = tutors.map(t => `
+      <tr>
+        <td>
+          <div class="user-cell">
+            <div class="user-av" style="background:var(--green)">${initials(`${t.firstName} ${t.lastName}`)}</div>
+            <div>
+              <div class="user-name">${t.firstName || ''} ${t.lastName || ''}</div>
+              <div class="user-sub">@${t.username}</div>
+            </div>
+          </div>
+        </td>
+        <td style="font-size:13px;color:var(--gray-600)">${t.email || '—'}</td>
+        <td style="font-size:13px;color:var(--gray-400)">—</td>
+        <td><a href="allocate.html" style="padding:5px 12px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;background:var(--green-bg);color:var(--green);border:none;border-radius:6px;text-decoration:none">Assign Student</a></td>
+      </tr>`).join('');
+  }
+
+  // Wire up the search input
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.querySelector('.form-input');
+    if (searchInput) searchInput.addEventListener('input', e => renderTutors(e.target.value));
+  });
+
   async function logoutUser() {
-    try{await fetch(`${API_BASE}/Authentication/logout/${currentUser.id}`,{method:'POST',headers:authHeaders()});}catch(e){}
-    localStorage.clear();window.location.href='../login.html';
+    try { await fetch(`${API_BASE}/Authentication/logout/${currentUser.id}`, { method:'POST', headers: authHeaders() }); } catch(e) {}
+    localStorage.removeItem('currentUser'); localStorage.removeItem('registeredUsername'); window.location.href = '../login.html';
   }
-  function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');}
-  function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
-  const sob=document.getElementById('signOutBtn');
-  sob.addEventListener('mouseover',()=>{sob.style.background='#fee2e2';sob.style.color='#dc2626';sob.style.borderColor='#fecaca';});
-  sob.addEventListener('mouseout',()=>{sob.style.background='var(--white)';sob.style.color='var(--gray-600)';sob.style.borderColor='var(--gray-200)';});
+  function openSidebar()  { document.getElementById('sidebar').classList.add('open');    document.getElementById('overlay').classList.add('show'); }
+  function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+  const sob = document.getElementById('signOutBtn');
+  sob.addEventListener('mouseover', () => { sob.style.background='#fee2e2'; sob.style.color='#dc2626'; sob.style.borderColor='#fecaca'; });
+  sob.addEventListener('mouseout',  () => { sob.style.background='var(--white)'; sob.style.color='var(--gray-600)'; sob.style.borderColor='var(--gray-200)'; });
 
   loadProfile();
+  loadTutors();
 </script>
 </body>
 </html>

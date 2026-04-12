@@ -45,16 +45,15 @@
   </header>
     <div class="content">
       <div class="page-hdr"><div class="page-hdr-left"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="page-hdr-title">Reports</span></div></div>
-      <div class="notice-bar">⚠️ System-wide reports require additional backend endpoints. These will populate once your partner builds the reporting endpoints.</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
         <div class="card" style="margin:0"><div class="card-body"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-bottom:6px">Messages (7 days)</div><div style="font-size:30px;font-weight:800;color:var(--blue)">—</div><div style="font-size:12px;color:var(--gray-500);margin-top:4px">System-wide total</div></div></div>
         <div class="card" style="margin:0"><div class="card-body"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-bottom:6px">Avg Messages / Tutor</div><div style="font-size:30px;font-weight:800;color:var(--green)">—</div><div style="font-size:12px;color:var(--gray-500);margin-top:4px">Last 7 days</div></div></div>
         <div class="card" style="margin:0"><div class="card-body"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-bottom:6px">Meetings (7 days)</div><div style="font-size:30px;font-weight:800;color:var(--amber)">—</div><div style="font-size:12px;color:var(--gray-500);margin-top:4px">System-wide total</div></div></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-        <div class="card" style="margin:0"><div class="card-hdr"><div class="card-title">Exception: No Tutor Assigned</div></div><div class="card-body"><div class="empty-state" style="padding:20px">Waiting for <code>GET /reports/students/no-tutor</code></div></div></div>
-        <div class="card" style="margin:0"><div class="card-hdr"><div class="card-title">Exception: 7-Day Inactive</div></div><div class="card-body"><div class="empty-state" style="padding:20px">Waiting for <code>GET /reports/students/inactive?days=7</code></div></div></div>
-        <div class="card" style="margin:0"><div class="card-hdr"><div class="card-title">Exception: 28-Day Inactive</div></div><div class="card-body"><div class="empty-state" style="padding:20px">Waiting for <code>GET /reports/students/inactive?days=28</code></div></div></div>
+        <div class="card" style="margin:0"><div class="card-hdr" style="display:flex;align-items:center;justify-content:space-between"><div class="card-title">No Tutor Assigned</div><span id="noTutorCount" style="font-size:18px;font-weight:800;color:var(--red)">—</span></div><div id="noTutorPanel"><div class="empty-state" style="padding:20px">Loading...</div></div></div>
+        <div class="card" style="margin:0"><div class="card-hdr" style="display:flex;align-items:center;justify-content:space-between"><div class="card-title">7-Day Inactive</div><span id="inactive7Count" style="font-size:18px;font-weight:800;color:var(--amber)">—</span></div><div id="inactive7Panel"><div class="empty-state" style="padding:20px">Loading...</div></div></div>
+        <div class="card" style="margin:0"><div class="card-hdr" style="display:flex;align-items:center;justify-content:space-between"><div class="card-title">28-Day Inactive</div><span id="inactive28Count" style="font-size:18px;font-weight:800;color:var(--amber)">—</span></div><div id="inactive28Panel"><div class="empty-state" style="padding:20px">Loading...</div></div></div>
       </div>
     </div>
   </div>
@@ -65,23 +64,90 @@
   if (!currentUser) window.location.href = '../login.html';
   function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': JSON.stringify(currentUser) }; }
   function initials(n) { if (!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+
   async function loadProfile() {
-    const un = currentUser.username||'Staff';
-    document.getElementById('profileName').textContent=un;
-    document.getElementById('topbarAv').textContent=un.substring(0,2).toUpperCase();
-    try { const r=await fetch(`${API_BASE}/User/dashboard/${currentUser.id}`,{headers:authHeaders()}); if(r.ok){const p=await r.json();const dn=p.fullName||p.username||un;document.getElementById('profileName').textContent=dn;document.getElementById('topbarAv').textContent=initials(dn);} } catch(e){}
+    const un = currentUser.username || 'Staff';
+    document.getElementById('profileName').textContent = un;
+    document.getElementById('topbarAv').textContent = un.substring(0,2).toUpperCase();
+    try {
+      const r = await fetch(`${API_BASE}/User/dashboard/${currentUser.id}`, { headers: authHeaders() });
+      if (r.ok) { const p = await r.json(); const dn=p.fullName||p.username||un; document.getElementById('profileName').textContent=dn; document.getElementById('topbarAv').textContent=initials(dn); }
+    } catch(e) {}
   }
+
+  async function loadReports() {
+    // ── No Tutor Assigned ─────────────────────────────────────────
+    try {
+      const res = await fetch(`${API_BASE}/User/reports/students/no-tutor`, { headers: authHeaders() });
+      if (res.ok) {
+        const users = await res.json();
+        const panel = document.getElementById('noTutorPanel');
+        if (!users || users.length === 0) {
+          panel.innerHTML = '<div class="empty-state" style="padding:20px">No unallocated students — all students have a tutor assigned.</div>';
+        } else {
+          panel.innerHTML = users.map(u => `
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--gray-100)">
+              <div class="user-av">${initials(`${u.firstName} ${u.lastName}`)}</div>
+              <div>
+                <div class="user-name" style="font-size:13px;font-weight:600">${u.firstName} ${u.lastName}</div>
+                <div style="font-size:11px;color:var(--gray-400)">${u.email}</div>
+              </div>
+              <a href="allocate.html" style="margin-left:auto;padding:4px 12px;font-size:12px;font-weight:600;font-family:inherit;background:var(--blue-bg);color:var(--blue);border:none;border-radius:6px;text-decoration:none;cursor:pointer">Allocate</a>
+            </div>`).join('');
+        }
+        document.getElementById('noTutorCount').textContent = users ? users.length : 0;
+      }
+    } catch(e) {}
+
+    // ── 7-Day Inactive ────────────────────────────────────────────
+    try {
+      const res7 = await fetch(`${API_BASE}/User/reports/students/in-active?days=7`, { headers: authHeaders() });
+      if (res7.ok) {
+        const users = await res7.json();
+        renderInactivePanel('inactive7Panel', 'inactive7Count', users, 7);
+      }
+    } catch(e) {}
+
+    // ── 28-Day Inactive ───────────────────────────────────────────
+    try {
+      const res28 = await fetch(`${API_BASE}/User/reports/students/in-active?days=28`, { headers: authHeaders() });
+      if (res28.ok) {
+        const users = await res28.json();
+        renderInactivePanel('inactive28Panel', 'inactive28Count', users, 28);
+      }
+    } catch(e) {}
+  }
+
+  function renderInactivePanel(panelId, countId, users, days) {
+    const panel = document.getElementById(panelId);
+    if (!users || users.length === 0) {
+      panel.innerHTML = `<div class="empty-state" style="padding:20px">No users inactive for ${days}+ days.</div>`;
+      document.getElementById(countId).textContent = 0;
+      return;
+    }
+    document.getElementById(countId).textContent = users.length;
+    panel.innerHTML = users.slice(0, 8).map(u => `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--gray-100)">
+        <div class="user-av" style="background:var(--amber)">${initials(`${u.firstName||''} ${u.lastName||''}`)}</div>
+        <div>
+          <div style="font-size:13px;font-weight:600">${u.firstName||''} ${u.lastName||''}</div>
+          <div style="font-size:11px;color:var(--gray-400)">${u.email||''}</div>
+        </div>
+      </div>`).join('') + (users.length > 8 ? `<div style="padding:10px 16px;font-size:12px;color:var(--gray-400)">+${users.length-8} more</div>` : '');
+  }
+
   async function logoutUser() {
-    try{await fetch(`${API_BASE}/Authentication/logout/${currentUser.id}`,{method:'POST',headers:authHeaders()});}catch(e){}
-    localStorage.clear();window.location.href='../login.html';
+    try { await fetch(`${API_BASE}/Authentication/logout/${currentUser.id}`, { method:'POST', headers: authHeaders() }); } catch(e) {}
+    localStorage.removeItem('currentUser'); localStorage.removeItem('registeredUsername'); window.location.href = '../login.html';
   }
-  function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('show');}
-  function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
-  const sob=document.getElementById('signOutBtn');
-  sob.addEventListener('mouseover',()=>{sob.style.background='#fee2e2';sob.style.color='#dc2626';sob.style.borderColor='#fecaca';});
-  sob.addEventListener('mouseout',()=>{sob.style.background='var(--white)';sob.style.color='var(--gray-600)';sob.style.borderColor='var(--gray-200)';});
+  function openSidebar()  { document.getElementById('sidebar').classList.add('open');    document.getElementById('overlay').classList.add('show'); }
+  function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+  const sob = document.getElementById('signOutBtn');
+  sob.addEventListener('mouseover', () => { sob.style.background='#fee2e2'; sob.style.color='#dc2626'; sob.style.borderColor='#fecaca'; });
+  sob.addEventListener('mouseout',  () => { sob.style.background='var(--white)'; sob.style.color='var(--gray-600)'; sob.style.borderColor='var(--gray-200)'; });
 
   loadProfile();
+  loadReports();
 </script>
 </body>
 </html>

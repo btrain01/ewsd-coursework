@@ -175,9 +175,7 @@
           </div>
         </div>
 
-        <!-- <div class="notice-bar">
-          ⚠️ System-wide stats require list endpoints not yet built. Numbers will populate once your partner adds <code>GET /users?role=student</code> and <code>GET /users?role=tutor</code>.
-        </div> -->
+        <!--  -->
 
         <!-- Stats -->
         <div class="stats-row">
@@ -275,18 +273,37 @@
     const API_BASE = 'http://localhost:5188';
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
     if (!currentUser) window.location.href = '../login.html';
-
     function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': JSON.stringify(currentUser) }; }
-    function initials(name) { if (!name) return '?'; return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase(); }
+    function initials(n) { if (!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
 
     const username = currentUser.username || 'Staff';
     document.getElementById('profileName').textContent = username;
-    document.getElementById('topbarAv').textContent = username.substring(0, 2).toUpperCase();
+    document.getElementById('topbarAv').textContent = username.substring(0,2).toUpperCase();
+
+    function renderUserRow(user, roleLabel, pillClass) {
+      const name = (user.firstName && user.lastName) ? `${user.firstName} ${user.lastName}` : user.username;
+      const av   = name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+      return `<div class="user-row">
+        <div class="user-av" style="${pillClass === 'pill-tutor' ? 'background:var(--green)' : ''}">${av}</div>
+        <div class="user-info">
+          <div class="user-name">${name}</div>
+          <div class="user-meta">${user.email || ''}</div>
+        </div>
+        <span class="pill ${pillClass}">${roleLabel}</span>
+      </div>`;
+    }
 
     async function loadDashboard() {
       try {
-        // Load own profile
-        const profileRes = await fetch(`${API_BASE}/User/dashboard/${currentUser.id}`, { headers: authHeaders() });
+        const [profileRes, msgRes, studentsRes, tutorsRes, noTutorRes] = await Promise.all([
+          fetch(`${API_BASE}/User/dashboard/${currentUser.id}`,      { headers: authHeaders() }),
+          fetch(`${API_BASE}/User/messages/${currentUser.id}`,       { headers: authHeaders() }),
+          fetch(`${API_BASE}/User/role/name/STUDENT`,                { headers: authHeaders() }),
+          fetch(`${API_BASE}/User/role/name/TUTOR`,                  { headers: authHeaders() }),
+          fetch(`${API_BASE}/User/reports/students/no-tutor`,        { headers: authHeaders() }),
+        ]);
+
+        // Profile
         if (profileRes.ok) {
           const p = await profileRes.json();
           const dn = p.fullName || p.username || username;
@@ -294,8 +311,7 @@
           document.getElementById('topbarAv').textContent = initials(dn);
         }
 
-        // Load own messages (only thing available until partner adds list endpoints)
-        const msgRes = await fetch(`${API_BASE}/User/messages/${currentUser.id}`, { headers: authHeaders() });
+        // Messages
         if (msgRes.ok) {
           const msgs = await msgRes.json();
           const unread = msgs.filter(m => !m.isRead && m.recipientId === currentUser.id);
@@ -303,25 +319,40 @@
           document.getElementById('statMessagesSub').textContent = unread.length > 0 ? `${unread.length} unread` : 'All read';
         }
 
+        // Students
+        if (studentsRes.ok) {
+          const students = await studentsRes.json();
+          document.getElementById('statStudents').textContent = students.length;
+          document.getElementById('studentsPanel').innerHTML = students.length === 0
+            ? '<div class="empty-state" style="font-size:12px">No students registered</div>'
+            : students.slice(0,5).map(s => renderUserRow(s,'Student','pill-student')).join('')
+              + (students.length > 5 ? `<div style="padding:10px 16px;font-size:12px;color:var(--gray-400)">+${students.length-5} more &nbsp;<a href="all-students.html" style="color:var(--blue)">View all</a></div>` : '');
+        }
+
+        // Tutors
+        if (tutorsRes.ok) {
+          const tutors = await tutorsRes.json();
+          document.getElementById('statTutors').textContent = tutors.length;
+          document.getElementById('tutorsPanel').innerHTML = tutors.length === 0
+            ? '<div class="empty-state" style="font-size:12px">No tutors registered</div>'
+            : tutors.slice(0,5).map(t => renderUserRow(t,'Tutor','pill-tutor')).join('')
+              + (tutors.length > 5 ? `<div style="padding:10px 16px;font-size:12px;color:var(--gray-400)">+${tutors.length-5} more &nbsp;<a href="all-tutors.html" style="color:var(--blue)">View all</a></div>` : '');
+        }
+
+        // Unallocated
+        if (noTutorRes.ok) {
+          const noTutor = await noTutorRes.json();
+          document.getElementById('statUnallocated').textContent = noTutor ? noTutor.length : 0;
+        } else {
+          document.getElementById('statUnallocated').textContent = '—';
+        }
+
       } catch(e) { console.error(e); }
     }
 
-    // ── Ready to wire up once backend adds these endpoints ────────
-    function renderUserRow(user, roleLabel, pillClass) {
-      return `<div class="user-row">
-        <div class="user-av">${initials(user.fullName || user.username)}</div>
-        <div class="user-info">
-          <div class="user-name">${user.fullName || user.username}</div>
-          <div class="user-meta">${user.email}</div>
-        </div>
-        <span class="pill ${pillClass}">${roleLabel}</span>
-      </div>`;
-    }
-    // ─────────────────────────────────────────────────────────────
-
     async function logoutUser() {
       try { await fetch(`${API_BASE}/Authentication/logout/${currentUser.id}`, { method: 'POST', headers: authHeaders() }); } catch(e) {}
-      localStorage.clear(); window.location.href = '../login.html';
+      localStorage.removeItem('currentUser'); localStorage.removeItem('registeredUsername'); window.location.href = '../login.html';
     }
     function openSidebar()  { document.getElementById('sidebar').classList.add('open');    document.getElementById('overlay').classList.add('show'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }

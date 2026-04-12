@@ -135,58 +135,79 @@
   function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': JSON.stringify(currentUser) }; }
   function initials(n) { if (!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
 
-  const un = currentUser.username || 'Staff';
-  document.getElementById('profileName').textContent = un;
-  document.getElementById('topbarAv').textContent = un.substring(0,2).toUpperCase();
-
   let allStudents = [];
 
-  async function loadStudents() {
+  async function loadProfile() {
+    const un = currentUser.username || 'Staff';
+    document.getElementById('profileName').textContent = un;
+    document.getElementById('topbarAv').textContent = un.substring(0,2).toUpperCase();
     try {
-      const pRes = await fetch(`${API_BASE}/User/dashboard/${currentUser.id}`, { headers: authHeaders() });
-      if (pRes.ok) { const p = await pRes.json(); const dn = p.fullName||p.username||un; document.getElementById('profileName').textContent=dn; document.getElementById('topbarAv').textContent=initials(dn); }
-    } catch(e) {}
-
-    // ── Wire up once backend provides GET /users?role=student ──
-    try {
-      const res = await fetch(`${API_BASE}/User/role/${roleId}`, { headers: authHeaders() });
-      if (res.ok) {
-        allStudents = await res.json();
-        document.getElementById('noticeBar').style.display = 'none';
-        applyFilters();
-      }
+      const r = await fetch(`${API_BASE}/User/dashboard/${currentUser.id}`, { headers: authHeaders() });
+      if (r.ok) { const p = await r.json(); const dn = p.fullName||p.username||un; document.getElementById('profileName').textContent=dn; document.getElementById('topbarAv').textContent=initials(dn); }
     } catch(e) {}
   }
 
+  // GET /User/role/name/{roleName} — returns List<User> for that role
+  async function loadStudents() {
+    try {
+      const res = await fetch(`${API_BASE}/User/role/name/STUDENT`, { headers: authHeaders() });
+      if (res.ok) {
+        allStudents = await res.json();
+        document.getElementById('countBadge').textContent = `${allStudents.length} student${allStudents.length !== 1 ? 's' : ''}`;
+        document.getElementById('noticeBar').style.display = 'none';
+        applyFilters();
+      } else {
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="4"><div class="empty-state">Could not load students</div></td></tr>';
+      }
+    } catch(e) {
+      document.getElementById('tableBody').innerHTML = '<tr><td colspan="4"><div class="empty-state">Could not reach the server</div></td></tr>';
+    }
+  }
+
   function applyFilters() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
+    const q     = document.getElementById('searchInput').value.toLowerCase();
     const alloc = document.getElementById('allocFilter').value;
     let data = allStudents.filter(s => {
-      const matchSearch = !q || (s.fullName||'').toLowerCase().includes(q) || (s.email||'').toLowerCase().includes(q);
-      const matchAlloc = alloc === 'all' || (alloc === 'allocated' ? s.tutorId : !s.tutorId);
-      return matchSearch && matchAlloc;
+      const name  = `${s.firstName || ''} ${s.lastName || ''}`.toLowerCase();
+      const email = (s.email || '').toLowerCase();
+      const matchSearch = !q || name.includes(q) || email.includes(q) || (s.username||'').toLowerCase().includes(q);
+      return matchSearch;
+      // Note: allocation status filter needs tutor_assignments data — left as future enhancement
     });
     document.getElementById('countBadge').textContent = `${data.length} student${data.length !== 1 ? 's' : ''}`;
     const tbody = document.getElementById('tableBody');
-    if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state">No students found</div></td></tr>'; return; }
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state">No students found</div></td></tr>';
+      return;
+    }
     tbody.innerHTML = data.map(s => `
       <tr>
-        <td><div class="user-cell"><div class="user-av">${initials(s.fullName||s.username)}</div><div><div class="user-name">${s.fullName||s.username}</div><div class="user-sub">#${s.id}</div></div></div></td>
-        <td style="font-size:13px;color:var(--gray-600)">${s.email||'—'}</td>
-        <td><span class="pill ${s.tutorId ? 'pill-yes' : 'pill-no'}">${s.tutorId ? 'Assigned' : 'Unassigned'}</span></td>
-        <td><button class="btn-xs" onclick="window.location.href='allocate.html'">${s.tutorId ? 'Reallocate' : 'Allocate'}</button></td>
+        <td>
+          <div class="user-cell">
+            <div class="user-av">${initials(`${s.firstName} ${s.lastName}`)}</div>
+            <div>
+              <div class="user-name">${s.firstName || ''} ${s.lastName || ''}</div>
+              <div class="user-sub">@${s.username}</div>
+            </div>
+          </div>
+        </td>
+        <td style="font-size:13px;color:var(--gray-600)">${s.email || '—'}</td>
+        <td><span class="pill pill-yes">—</span></td>
+        <td><a href="allocate.html" class="btn-xs" style="padding:5px 12px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;background:var(--blue-bg);color:var(--blue);border:none;border-radius:6px;text-decoration:none">Allocate</a></td>
       </tr>`).join('');
   }
 
   async function logoutUser() {
     try { await fetch(`${API_BASE}/Authentication/logout/${currentUser.id}`, { method:'POST', headers: authHeaders() }); } catch(e) {}
-    localStorage.clear(); window.location.href = '../login.html';
+    localStorage.removeItem('currentUser'); localStorage.removeItem('registeredUsername'); window.location.href = '../login.html';
   }
   function openSidebar()  { document.getElementById('sidebar').classList.add('open');    document.getElementById('overlay').classList.add('show'); }
   function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
   const sob = document.getElementById('signOutBtn');
   sob.addEventListener('mouseover', () => { sob.style.background='#fee2e2'; sob.style.color='#dc2626'; sob.style.borderColor='#fecaca'; });
   sob.addEventListener('mouseout',  () => { sob.style.background='var(--white)'; sob.style.color='var(--gray-600)'; sob.style.borderColor='var(--gray-200)'; });
+
+  loadProfile();
   loadStudents();
 </script>
 </body>

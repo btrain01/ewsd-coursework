@@ -3,7 +3,76 @@
 <head>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>eTutor — Reports</title>
-  <style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}:root{--blue:#1a56db;--blue-dark:#1a3a6b;--blue-bg:#e8f0fe;--white:#ffffff;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-300:#d1d5db;--gray-400:#94a3b8;--gray-500:#6b7280;--gray-700:#374151;--gray-800:#1f2937;--green:#16a34a;--green-bg:#dcfce7;--amber:#d97706;--amber-bg:#fef3c7;--red:#dc2626;--red-bg:#fee2e2;--sidebar-w:240px;--header-h:60px;--radius:12px;--shadow:0 1px 4px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.10)}body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--gray-100);color:var(--gray-800);min-height:100vh}.layout{display:flex;min-height:100vh}.sidebar{width:var(--sidebar-w);background:var(--white);border-right:1px solid var(--gray-200);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .25s ease;overflow-y:auto}.sidebar-profile{padding:24px 20px 20px;display:flex;flex-direction:column;align-items:center;border-bottom:1px solid var(--gray-200)}.profile-pic{width:72px;height:72px;border-radius:50%;background:var(--blue-bg);border:3px solid var(--blue);display:flex;align-items:center;justify-content:center;margin-bottom:10px}.profile-pic svg{color:var(--blue)}.profile-name{font-size:14px;font-weight:700}.profile-role{font-size:11px;color:var(--gray-500);margin-top:2px}.btn-profile{margin-top:12px;padding:6px 20px;background:var(--blue);color:var(--white);font-size:12px;font-weight:600;font-family:inherit;border:none;border-radius:6px;cursor:pointer}.sidebar-nav{flex:1;padding:10px 0}.nav-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);padding:12px 20px 4px}.nav-link{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13.5px;color:var(--gray-700);text-decoration:none;cursor:pointer;border-left:3px solid transparent;transition:background .15s,color .15s;user-select:none}.nav-link:hover{background:var(--blue-bg);color:var(--blue)}.nav-link.active{background:var(--blue-bg);color:var(--blue);font-weight:600;border-left-color:var(--blue)}.nav-link svg{opacity:.6;flex-shrink:0}.nav-link:hover svg,.nav-link.active svg{opacity:1}.sidebar-footer{padding:12px 20px;border-top:1px solid var(--gray-200);font-size:11px;color:var(--gray-400)}.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}.topbar{height:var(--header-h);background:var(--white);border-bottom:1px solid var(--gray-200);display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:4px}.hamburger span{display:block;width:20px;height:2px;background:var(--gray-700);border-radius:2px}.back-btn{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--gray-700);background:var(--gray-100);border:1px solid var(--gray-200);border-radius:7px;padding:5px 12px;cursor:pointer;text-decoration:none}.back-btn:hover{background:var(--gray-200)}.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}.icon-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--gray-200);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;color:var(--gray-600)}.notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--red);border:2px solid var(--white)}.topbar-av{width:34px;height:34px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}.content{padding:24px;flex:1}.page-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}.page-hdr-left{display:flex;align-items:center;gap:10px}.page-hdr-left svg{color:var(--blue)}.page-hdr-title{font-size:17px;font-weight:700}.card{background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-200);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}.card-hdr{padding:14px 20px;border-bottom:1px solid var(--gray-100)}.card-title{font-size:14px;font-weight:700;margin-bottom:2px}.card-sub{font-size:12px;color:var(--gray-500)}.card-body{padding:20px}.form-group{margin-bottom:16px}.form-label{display:block;font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:5px}.form-input,.form-select,.form-textarea{width:100%;padding:9px 12px;border:1px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:inherit;outline:none;color:var(--gray-800);transition:border-color .15s;background:var(--white)}.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--blue)}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.btn-primary{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--blue);color:var(--white);font-size:13px;font-weight:600;font-family:inherit;border:none;border-radius:8px;cursor:pointer;transition:background .15s}.btn-primary:hover{background:var(--blue-dark)}.btn-primary:disabled{opacity:.6;cursor:not-allowed}.btn-outline{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--white);color:var(--blue);font-size:13px;font-weight:600;font-family:inherit;border:1.5px solid var(--blue-bg);border-radius:8px;cursor:pointer;transition:background .15s}.btn-outline:hover{background:var(--blue-bg)}.success-msg{background:var(--green-bg);border:1px solid #bbf7d0;color:var(--green);font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:16px;display:none}.error-msg{background:var(--red-bg);border:1px solid #fecaca;color:var(--red);font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:16px;display:none}.notice-bar{background:var(--amber-bg);border:1px solid #fde68a;border-radius:8px;color:var(--amber);font-size:13px;padding:10px 14px;margin-bottom:16px}.pill{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap}.pill-yes{background:var(--green-bg);color:var(--green)}.pill-no{background:var(--red-bg);color:var(--red)}.pill-tutor{background:var(--green-bg);color:var(--green)}.table-wrap{overflow-x:auto}.data-table{width:100%;border-collapse:collapse;font-size:13px}.data-table th{text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);padding:10px 16px;border-bottom:1px solid var(--gray-200);white-space:nowrap}.data-table td{padding:12px 16px;border-bottom:1px solid var(--gray-100);vertical-align:middle}.data-table tbody tr:last-child td{border-bottom:none}.data-table tbody tr:hover td{background:var(--gray-50)}.user-cell{display:flex;align-items:center;gap:10px}.user-av{width:32px;height:32px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0}.user-name{font-weight:600}.user-sub{font-size:11px;color:var(--gray-400);margin-top:1px}.empty-state{padding:40px;text-align:center;color:var(--gray-400);font-size:13px}.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:90}.overlay.show{display:block}@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0);box-shadow:4px 0 20px rgba(0,0,0,.12)}.main{margin-left:0}.hamburger{display:flex}.content{padding:16px}.back-btn{display:none}.form-row{grid-template-columns:1fr}}</style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--blue:#1a56db;--blue-dark:#1a3a6b;--blue-bg:#e8f0fe;--white:#ffffff;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-300:#d1d5db;--gray-400:#94a3b8;--gray-500:#6b7280;--gray-700:#374151;--gray-800:#1f2937;--green:#16a34a;--green-bg:#dcfce7;--amber:#d97706;--amber-bg:#fef3c7;--red:#dc2626;--red-bg:#fee2e2;--purple:#7c3aed;--sidebar-w:240px;--header-h:60px;--radius:12px;--shadow:0 1px 4px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.10)}
+    body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--gray-100);color:var(--gray-800);min-height:100vh}
+    .layout{display:flex;min-height:100vh}
+    .sidebar{width:var(--sidebar-w);background:var(--white);border-right:1px solid var(--gray-200);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .25s ease;overflow-y:auto}
+    .sidebar-profile{padding:24px 20px 20px;display:flex;flex-direction:column;align-items:center;border-bottom:1px solid var(--gray-200)}
+    .profile-pic{width:72px;height:72px;border-radius:50%;background:var(--blue-bg);border:3px solid var(--blue);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+    .profile-pic svg{color:var(--blue)}.profile-name{font-size:14px;font-weight:700}.profile-role{font-size:11px;color:var(--gray-500);margin-top:2px}
+    .btn-profile{margin-top:12px;padding:6px 20px;background:var(--blue);color:var(--white);font-size:12px;font-weight:600;font-family:inherit;border:none;border-radius:6px;cursor:pointer}
+    .sidebar-nav{flex:1;padding:10px 0}.nav-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);padding:12px 20px 4px}
+    .nav-link{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13.5px;color:var(--gray-700);text-decoration:none;cursor:pointer;border-left:3px solid transparent;transition:background .15s,color .15s;user-select:none}
+    .nav-link:hover{background:var(--blue-bg);color:var(--blue)}.nav-link.active{background:var(--blue-bg);color:var(--blue);font-weight:600;border-left-color:var(--blue)}
+    .nav-link svg{opacity:.6;flex-shrink:0}.nav-link:hover svg,.nav-link.active svg{opacity:1}
+    .sidebar-footer{padding:12px 20px;border-top:1px solid var(--gray-200);font-size:11px;color:var(--gray-400)}
+    .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{height:var(--header-h);background:var(--white);border-bottom:1px solid var(--gray-200);display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}
+    .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:4px}.hamburger span{display:block;width:20px;height:2px;background:var(--gray-700);border-radius:2px}
+    .back-btn{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--gray-700);background:var(--gray-100);border:1px solid var(--gray-200);border-radius:7px;padding:5px 12px;cursor:pointer;text-decoration:none}
+    .back-btn:hover{background:var(--gray-200)}.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+    .icon-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--gray-200);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;color:var(--gray-600)}
+    .notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--red);border:2px solid var(--white)}
+    .topbar-av{width:34px;height:34px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+    .content{padding:24px;flex:1}
+    .page-hdr{display:flex;align-items:center;margin-bottom:20px;gap:10px}
+    .page-hdr svg{color:var(--blue)}.page-hdr-title{font-size:17px;font-weight:700}
+
+    /* STAT CARDS */
+    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+    .stat-card{background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-200);padding:16px 20px;box-shadow:var(--shadow);transition:box-shadow .2s,transform .2s}
+    .stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+    .stat-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+    .ic-blue{background:var(--blue-bg)}.ic-green{background:var(--green-bg)}.ic-amber{background:var(--amber-bg)}.ic-red{background:var(--red-bg)}
+    .stat-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-bottom:6px}
+    .stat-value{font-size:26px;font-weight:800;color:var(--gray-800);line-height:1}
+    .stat-value.red{color:var(--red)}.stat-sub{font-size:12px;color:var(--gray-500);margin-top:4px}
+
+    /* CHART CARDS */
+    .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+    .chart-card{background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-200);box-shadow:var(--shadow);overflow:hidden}
+    .chart-hdr{padding:14px 20px;border-bottom:1px solid var(--gray-100)}
+    .chart-title{font-size:14px;font-weight:700}.chart-sub{font-size:12px;color:var(--gray-500);margin-top:2px}
+    .chart-body{padding:16px 20px 20px;display:flex;flex-direction:column;align-items:center;gap:14px}
+    .chart-canvas-wrap{position:relative;width:100%;max-width:260px}
+    .chart-bar-wrap{position:relative;width:100%;height:200px}
+    .legend{display:flex;flex-direction:column;gap:7px;width:100%}
+    .legend-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--gray-700)}
+    .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .legend-val{margin-left:auto;font-weight:700;font-size:12px;color:var(--gray-800)}
+
+    /* EXCEPTION CARDS */
+    .exc-row-outer{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+    .exc-card{background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-200);box-shadow:var(--shadow);overflow:hidden}
+    .exc-card.danger{border-color:#fecaca}.exc-card.warn{border-color:#fde68a}
+    .exc-hdr{padding:12px 16px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between}
+    .exc-title{font-size:13px;font-weight:700}.exc-count{font-size:20px;font-weight:800}
+    .exc-card.danger .exc-count{color:var(--red)}.exc-card.warn .exc-count{color:var(--amber)}
+    .exc-body{max-height:260px;overflow-y:auto}
+    .exc-item{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--gray-100);font-size:13px}
+    .exc-item:last-child{border-bottom:none}
+    .exc-av{width:28px;height:28px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;flex-shrink:0}
+    .exc-name{font-size:12px;font-weight:600}.exc-email{font-size:11px;color:var(--gray-400)}
+    .exc-btn{margin-left:auto;padding:3px 10px;font-size:11px;font-weight:600;font-family:inherit;background:var(--blue-bg);color:var(--blue);border:none;border-radius:5px;cursor:pointer;text-decoration:none;white-space:nowrap}
+    .empty-state{padding:28px;text-align:center;color:var(--gray-400);font-size:13px}
+
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:90}.overlay.show{display:block}
+    @media(max-width:1100px){.stat-row{grid-template-columns:1fr 1fr}.charts-row{grid-template-columns:1fr}.exc-row-outer{grid-template-columns:1fr}}
+    @media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0);box-shadow:4px 0 20px rgba(0,0,0,.12)}.main{margin-left:0}.hamburger{display:flex}.content{padding:16px}.back-btn{display:none}.stat-row{grid-template-columns:1fr 1fr}}
+  </style>
 </head>
 <body>
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
@@ -17,8 +86,8 @@
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Overview</div>
-      <a class="nav-link" href="staff-dashboard.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
-      <a class="nav-link  active" href="reports.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Reports</a>
+      <a class="nav-link" href="../staff-dashboard.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+      <a class="nav-link active"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Reports</a>
       <div class="nav-section">Dashboards</div>
       <a class="nav-link" href="all-students.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>All Students</a>
       <a class="nav-link" href="all-tutors.html"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>All Tutors</a>
@@ -31,33 +100,130 @@
     </nav>
     <div class="sidebar-footer">© 2026 eTutor</div>
   </aside>
+
   <div class="main">
-  <header class="topbar">
-    <div class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></div>
-    <a class="back-btn" href="staff-dashboard.html"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg>Back</a>
-    <div class="topbar-right">
-      <div class="icon-btn"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-dot"></span></div>
-      <div class="topbar-av" id="topbarAv">—</div>
-      <button id="signOutBtn" onclick="logoutUser()" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:7px;font-size:12px;font-weight:600;font-family:inherit;background:var(--white);color:var(--gray-600);border:1px solid var(--gray-200);cursor:pointer;">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out
-      </button>
-    </div>
-  </header>
+    <header class="topbar">
+      <div class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></div>
+      <a class="back-btn" href="../staff-dashboard.html"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg>Back</a>
+      <div class="topbar-right">
+        <div class="icon-btn"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-dot"></span></div>
+        <div class="topbar-av" id="topbarAv">—</div>
+        <button id="signOutBtn" onclick="logoutUser()" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:7px;font-size:12px;font-weight:600;font-family:inherit;background:var(--white);color:var(--gray-600);border:1px solid var(--gray-200);cursor:pointer;">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out
+        </button>
+      </div>
+    </header>
+
     <div class="content">
-      <div class="page-hdr"><div class="page-hdr-left"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="page-hdr-title">Reports</span></div></div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
-        <div class="card" style="margin:0"><div class="card-body"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-bottom:6px">Messages (7 days)</div><div style="font-size:30px;font-weight:800;color:var(--blue)">—</div><div style="font-size:12px;color:var(--gray-500);margin-top:4px">System-wide total</div></div></div>
-        <div class="card" style="margin:0"><div class="card-body"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-bottom:6px">Avg Messages / Tutor</div><div style="font-size:30px;font-weight:800;color:var(--green)">—</div><div style="font-size:12px;color:var(--gray-500);margin-top:4px">Last 7 days</div></div></div>
-        <div class="card" style="margin:0"><div class="card-body"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);margin-bottom:6px">Meetings (7 days)</div><div style="font-size:30px;font-weight:800;color:var(--amber)">—</div><div style="font-size:12px;color:var(--gray-500);margin-top:4px">System-wide total</div></div></div>
+      <div class="page-hdr">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span class="page-hdr-title">Reports</span>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-        <div class="card" style="margin:0"><div class="card-hdr" style="display:flex;align-items:center;justify-content:space-between"><div class="card-title">No Tutor Assigned</div><span id="noTutorCount" style="font-size:18px;font-weight:800;color:var(--red)">—</span></div><div id="noTutorPanel"><div class="empty-state" style="padding:20px">Loading...</div></div></div>
-        <div class="card" style="margin:0"><div class="card-hdr" style="display:flex;align-items:center;justify-content:space-between"><div class="card-title">7-Day Inactive</div><span id="inactive7Count" style="font-size:18px;font-weight:800;color:var(--amber)">—</span></div><div id="inactive7Panel"><div class="empty-state" style="padding:20px">Loading...</div></div></div>
-        <div class="card" style="margin:0"><div class="card-hdr" style="display:flex;align-items:center;justify-content:space-between"><div class="card-title">28-Day Inactive</div><span id="inactive28Count" style="font-size:18px;font-weight:800;color:var(--amber)">—</span></div><div id="inactive28Panel"><div class="empty-state" style="padding:20px">Loading...</div></div></div>
+
+      <!-- Stat cards -->
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-icon ic-blue"><svg width="18" height="18" fill="none" stroke="var(--blue)" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div class="stat-label">Total Students</div>
+          <div class="stat-value" id="statStudents">—</div>
+          <div class="stat-sub">Registered</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon ic-green"><svg width="18" height="18" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="stat-label">Total Tutors</div>
+          <div class="stat-value" id="statTutors">—</div>
+          <div class="stat-sub">Registered</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon ic-red"><svg width="18" height="18" fill="none" stroke="var(--red)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <div class="stat-label">Unallocated</div>
+          <div class="stat-value red" id="statUnallocated">—</div>
+          <div class="stat-sub">No tutor assigned</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon ic-amber"><svg width="18" height="18" fill="none" stroke="var(--amber)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div>
+          <div class="stat-label">7-Day Inactive</div>
+          <div class="stat-value" id="statInactive7">—</div>
+          <div class="stat-sub">Need attention</div>
+        </div>
       </div>
+
+      <!-- Charts -->
+      <div class="charts-row">
+
+        <div class="chart-card">
+          <div class="chart-hdr">
+            <div class="chart-title">Student Allocation Status</div>
+            <div class="chart-sub">Allocated vs unallocated students</div>
+          </div>
+          <div class="chart-body">
+            <div class="chart-canvas-wrap"><canvas id="allocationChart" height="220"></canvas></div>
+            <div class="legend" id="allocationLegend"></div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-hdr">
+            <div class="chart-title">User Role Breakdown</div>
+            <div class="chart-sub">Distribution across all roles</div>
+          </div>
+          <div class="chart-body">
+            <div class="chart-canvas-wrap"><canvas id="rolesChart" height="220"></canvas></div>
+            <div class="legend" id="rolesLegend"></div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-hdr">
+            <div class="chart-title">Student Engagement</div>
+            <div class="chart-sub">Active vs inactive by time window</div>
+          </div>
+          <div class="chart-body" style="align-items:stretch">
+            <div class="chart-bar-wrap"><canvas id="engagementChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-hdr">
+            <div class="chart-title">Inactivity Thresholds</div>
+            <div class="chart-sub">Students inactive at 7 and 28 days</div>
+          </div>
+          <div class="chart-body" style="align-items:stretch">
+            <div class="chart-bar-wrap"><canvas id="inactivityChart"></canvas></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Exception panels -->
+      <div class="exc-row-outer">
+        <div class="exc-card danger">
+          <div class="exc-hdr">
+            <div><div class="exc-title">No Tutor Assigned</div><div style="font-size:11px;color:var(--gray-400);margin-top:2px">Students without a tutor</div></div>
+            <span class="exc-count" id="noTutorCount">—</span>
+          </div>
+          <div class="exc-body" id="noTutorPanel"><div class="empty-state">Loading...</div></div>
+        </div>
+        <div class="exc-card warn">
+          <div class="exc-hdr">
+            <div><div class="exc-title">7-Day Inactive</div><div style="font-size:11px;color:var(--gray-400);margin-top:2px">No activity in 7 days</div></div>
+            <span class="exc-count" id="inactive7Count">—</span>
+          </div>
+          <div class="exc-body" id="inactive7Panel"><div class="empty-state">Loading...</div></div>
+        </div>
+        <div class="exc-card warn">
+          <div class="exc-hdr">
+            <div><div class="exc-title">28-Day Inactive</div><div style="font-size:11px;color:var(--gray-400);margin-top:2px">No activity in 28 days</div></div>
+            <span class="exc-count" id="inactive28Count">—</span>
+          </div>
+          <div class="exc-body" id="inactive28Panel"><div class="empty-state">Loading...</div></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
+
 <script>
   const API_BASE = 'http://localhost:5188';
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -65,80 +231,189 @@
   function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': JSON.stringify(currentUser) }; }
   function initials(n) { if (!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
 
-  async function loadProfile() {
-    const un = currentUser.username || 'Staff';
-    document.getElementById('profileName').textContent = un;
-    document.getElementById('topbarAv').textContent = un.substring(0,2).toUpperCase();
+  const un = currentUser.username || 'Staff';
+  document.getElementById('profileName').textContent = un;
+  document.getElementById('topbarAv').textContent = un.substring(0,2).toUpperCase();
+  (async () => {
     try {
       const r = await fetch(`${API_BASE}/User/dashboard/${currentUser.id}`, { headers: authHeaders() });
       if (r.ok) { const p = await r.json(); const dn=p.fullName||p.username||un; document.getElementById('profileName').textContent=dn; document.getElementById('topbarAv').textContent=initials(dn); }
     } catch(e) {}
+  })();
+
+  // ── CHART COLOURS ────────────────────────────────────────────
+  const C = {
+    blue:'#1a56db', green:'#16a34a', red:'#dc2626',
+    amber:'#d97706', purple:'#7c3aed', teal:'#0891b2'
+  };
+
+  let charts = {};
+
+  function makeLegend(id, labels, colors, values) {
+    document.getElementById(id).innerHTML = labels.map((l,i) => `
+      <div class="legend-row">
+        <div class="legend-dot" style="background:${colors[i]}"></div>
+        <span>${l}</span>
+        <span class="legend-val">${values[i]}</span>
+      </div>`).join('');
   }
 
-  async function loadReports() {
-    // ── No Tutor Assigned ─────────────────────────────────────────
-    try {
-      const res = await fetch(`${API_BASE}/User/reports/students/no-tutor`, { headers: authHeaders() });
-      if (res.ok) {
-        const users = await res.json();
-        const panel = document.getElementById('noTutorPanel');
-        if (!users || users.length === 0) {
-          panel.innerHTML = '<div class="empty-state" style="padding:20px">No unallocated students — all students have a tutor assigned.</div>';
-        } else {
-          panel.innerHTML = users.map(u => `
-            <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--gray-100)">
-              <div class="user-av">${initials(`${u.firstName} ${u.lastName}`)}</div>
-              <div>
-                <div class="user-name" style="font-size:13px;font-weight:600">${u.firstName} ${u.lastName}</div>
-                <div style="font-size:11px;color:var(--gray-400)">${u.email}</div>
-              </div>
-              <a href="allocate.html" style="margin-left:auto;padding:4px 12px;font-size:12px;font-weight:600;font-family:inherit;background:var(--blue-bg);color:var(--blue);border:none;border-radius:6px;text-decoration:none;cursor:pointer">Allocate</a>
-            </div>`).join('');
-        }
-        document.getElementById('noTutorCount').textContent = users ? users.length : 0;
+  // ── DONUT: Allocation ─────────────────────────────────────────
+  function drawAllocation(allocated, unallocated) {
+    if (charts.allocation) charts.allocation.destroy();
+    charts.allocation = new Chart(document.getElementById('allocationChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Allocated', 'Unallocated'],
+        datasets: [{ data: [allocated, unallocated], backgroundColor: [C.green, C.red], borderWidth: 0, hoverOffset: 6 }]
+      },
+      options: {
+        cutout: '70%',
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.label}: ${c.raw}` } } },
+        animation: { duration: 800 }
       }
-    } catch(e) {}
-
-    // ── 7-Day Inactive ────────────────────────────────────────────
-    try {
-      const res7 = await fetch(`${API_BASE}/User/reports/students/in-active?days=7`, { headers: authHeaders() });
-      if (res7.ok) {
-        const users = await res7.json();
-        renderInactivePanel('inactive7Panel', 'inactive7Count', users, 7);
-      }
-    } catch(e) {}
-
-    // ── 28-Day Inactive ───────────────────────────────────────────
-    try {
-      const res28 = await fetch(`${API_BASE}/User/reports/students/in-active?days=28`, { headers: authHeaders() });
-      if (res28.ok) {
-        const users = await res28.json();
-        renderInactivePanel('inactive28Panel', 'inactive28Count', users, 28);
-      }
-    } catch(e) {}
+    });
+    makeLegend('allocationLegend', ['Allocated','Unallocated'], [C.green, C.red], [allocated, unallocated]);
   }
 
-  function renderInactivePanel(panelId, countId, users, days) {
+  // ── DONUT: Roles ──────────────────────────────────────────────
+  function drawRoles(students, tutors, staff) {
+    if (charts.roles) charts.roles.destroy();
+    charts.roles = new Chart(document.getElementById('rolesChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Students', 'Tutors', 'Staff / Admin'],
+        datasets: [{ data: [students, tutors, staff], backgroundColor: [C.blue, C.green, C.purple], borderWidth: 0, hoverOffset: 6 }]
+      },
+      options: {
+        cutout: '70%',
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.label}: ${c.raw}` } } },
+        animation: { duration: 800 }
+      }
+    });
+    makeLegend('rolesLegend', ['Students','Tutors','Staff / Admin'], [C.blue, C.green, C.purple], [students, tutors, staff]);
+  }
+
+  // ── STACKED BAR: Engagement ───────────────────────────────────
+  function drawEngagement(total, inactive7, inactive28) {
+    if (charts.engagement) charts.engagement.destroy();
+    charts.engagement = new Chart(document.getElementById('engagementChart'), {
+      type: 'bar',
+      data: {
+        labels: ['7-day window', '28-day window'],
+        datasets: [
+          { label: 'Active',   data: [Math.max(0, total - inactive7),  Math.max(0, total - inactive28)],  backgroundColor: C.green, borderRadius: 5, borderSkipped: false },
+          { label: 'Inactive', data: [inactive7, inactive28], backgroundColor: C.amber, borderRadius: 5, borderSkipped: false }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 12 } } } },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { font: { size: 12 } } },
+          y: { stacked: true, beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 12 }, precision: 0 } }
+        },
+        animation: { duration: 800 }
+      }
+    });
+  }
+
+  // ── BAR: Inactivity ───────────────────────────────────────────
+  function drawInactivity(inactive7, inactive28) {
+    if (charts.inactivity) charts.inactivity.destroy();
+    charts.inactivity = new Chart(document.getElementById('inactivityChart'), {
+      type: 'bar',
+      data: {
+        labels: ['7-day inactive', '28-day inactive'],
+        datasets: [{
+          label: 'Students',
+          data: [inactive7, inactive28],
+          backgroundColor: [C.amber, C.red],
+          borderRadius: 8, borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 12 } } },
+          y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 12 }, precision: 0 } }
+        },
+        animation: { duration: 800 }
+      }
+    });
+  }
+
+  // ── EXCEPTION PANEL ───────────────────────────────────────────
+  function renderException(panelId, countId, users, actionHref) {
+    const count = users ? users.length : 0;
+    document.getElementById(countId).textContent = count;
     const panel = document.getElementById(panelId);
-    if (!users || users.length === 0) {
-      panel.innerHTML = `<div class="empty-state" style="padding:20px">No users inactive for ${days}+ days.</div>`;
-      document.getElementById(countId).textContent = 0;
-      return;
-    }
-    document.getElementById(countId).textContent = users.length;
-    panel.innerHTML = users.slice(0, 8).map(u => `
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--gray-100)">
-        <div class="user-av" style="background:var(--amber)">${initials(`${u.firstName||''} ${u.lastName||''}`)}</div>
-        <div>
-          <div style="font-size:13px;font-weight:600">${u.firstName||''} ${u.lastName||''}</div>
-          <div style="font-size:11px;color:var(--gray-400)">${u.email||''}</div>
+    if (!users || count === 0) { panel.innerHTML = '<div class="empty-state">No users in this category</div>'; return; }
+    panel.innerHTML = users.slice(0,8).map(u => {
+      const name = (u.firstName && u.lastName) ? `${u.firstName} ${u.lastName}` : u.username;
+      return `<div class="exc-item">
+        <div class="exc-av">${initials(name)}</div>
+        <div style="flex:1;min-width:0">
+          <div class="exc-name">${name}</div>
+          <div class="exc-email">${u.email||''}</div>
         </div>
-      </div>`).join('') + (users.length > 8 ? `<div style="padding:10px 16px;font-size:12px;color:var(--gray-400)">+${users.length-8} more</div>` : '');
+        <a href="${actionHref}" class="exc-btn">Action</a>
+      </div>`;
+    }).join('') + (count > 8 ? `<div style="padding:10px 16px;font-size:12px;color:var(--gray-400)">+${count-8} more</div>` : '');
+  }
+
+  // ── LOAD ALL ──────────────────────────────────────────────────
+  async function loadReports() {
+    try {
+      const [sRes, tRes, stRes, ntRes, i7Res, i28Res] = await Promise.all([
+        fetch(`${API_BASE}/User/role/name/STUDENT`, { headers: authHeaders() }),
+        fetch(`${API_BASE}/User/role/name/TUTOR`,   { headers: authHeaders() }),
+        fetch(`${API_BASE}/User/role/name/STAFF`,   { headers: authHeaders() }),
+        fetch(`${API_BASE}/User/reports/students/no-tutor`,          { headers: authHeaders() }),
+        fetch(`${API_BASE}/User/reports/students/in-active?days=7`,  { headers: authHeaders() }),
+        fetch(`${API_BASE}/User/reports/students/in-active?days=28`, { headers: authHeaders() }),
+      ]);
+
+      const students  = sRes.ok   ? await sRes.json()   : [];
+      const tutors    = tRes.ok   ? await tRes.json()   : [];
+      const staff     = stRes.ok  ? await stRes.json()  : [];
+      const noTutor   = ntRes.ok  ? await ntRes.json()  : [];
+      const inactive7 = i7Res.ok  ? await i7Res.json()  : [];
+      const inactive28= i28Res.ok ? await i28Res.json() : [];
+
+      const nStudents  = students.length;
+      const nTutors    = tutors.length;
+      const nStaff     = staff.length;
+      const nNoTutor   = noTutor  ? noTutor.length  : 0;
+      const n7         = inactive7  ? inactive7.length  : 0;
+      const n28        = inactive28 ? inactive28.length : 0;
+      const nAllocated = Math.max(0, nStudents - nNoTutor);
+
+      // Stat cards
+      document.getElementById('statStudents').textContent    = nStudents;
+      document.getElementById('statTutors').textContent      = nTutors;
+      document.getElementById('statUnallocated').textContent = nNoTutor;
+      document.getElementById('statInactive7').textContent   = n7;
+
+      // Charts
+      drawAllocation(nAllocated, nNoTutor);
+      drawRoles(nStudents, nTutors, nStaff);
+      drawEngagement(nStudents, n7, n28);
+      drawInactivity(n7, n28);
+
+      // Exception panels
+      renderException('noTutorPanel',   'noTutorCount',   noTutor,   'allocate.html');
+      renderException('inactive7Panel', 'inactive7Count', inactive7, 'all-students.html');
+      renderException('inactive28Panel','inactive28Count',inactive28,'all-students.html');
+
+    } catch(e) { console.error('Reports load error:', e); }
   }
 
   async function logoutUser() {
     try { await fetch(`${API_BASE}/Authentication/logout/${currentUser.id}`, { method:'POST', headers: authHeaders() }); } catch(e) {}
-    localStorage.removeItem('currentUser'); localStorage.removeItem('registeredUsername'); window.location.href = '../login.html';
+    localStorage.removeItem('currentUser'); localStorage.removeItem('registeredUsername');
+    window.location.href = '../login.html';
   }
   function openSidebar()  { document.getElementById('sidebar').classList.add('open');    document.getElementById('overlay').classList.add('show'); }
   function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
@@ -146,7 +421,6 @@
   sob.addEventListener('mouseover', () => { sob.style.background='#fee2e2'; sob.style.color='#dc2626'; sob.style.borderColor='#fecaca'; });
   sob.addEventListener('mouseout',  () => { sob.style.background='var(--white)'; sob.style.color='var(--gray-600)'; sob.style.borderColor='var(--gray-200)'; });
 
-  loadProfile();
   loadReports();
 </script>
 </body>
